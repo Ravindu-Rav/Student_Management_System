@@ -4,7 +4,7 @@ This is a simple **Student Management System** built using **Python** and **MySQ
 
 ## 📌 Features
 
-- 🔐 Admin Login (simple CLI-based auth)
+- 🔐 Admin Login
 - 👨‍🎓 Manage Students (add/view/edit/delete)
 - 📚 Manage Courses
 - 📝 Manage Grades
