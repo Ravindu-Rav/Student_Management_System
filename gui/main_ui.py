@@ -2,42 +2,43 @@
 
 import tkinter as tk
 from tkinter import messagebox
-from gui.student_ui import open_student_window #for the student window
-from gui.course_ui import open_course_window #for the course
-from gui.grade_ui import open_grade_window #for the grade
-from gui.attendance_ui import open_attendance_window #for the attendance
-from gui.admin_ui import open_admin_window #for the admin operations
+from gui.student_ui import open_student_window
+from gui.course_ui import open_course_window
+from gui.grade_ui import open_grade_window
+from gui.attendance_ui import open_attendance_window
+from gui.admin_ui import open_admin_window
 
-def open_student_ui():
-    open_student_window()
+def open_student_ui(username):
+    open_student_window(username)
 
-def open_course_ui():
-    open_course_window()
+def open_course_ui(username):
+    open_course_window(username)
 
+def open_grade_ui(username):
+    open_grade_window(username)
 
-def open_grade_ui():
-    open_grade_window()
+def open_attendance_ui(username):
+    open_attendance_window(username)
 
-def open_attendance_ui():
-    open_attendance_window()
+def open_admin_ui(username):
+    open_admin_window(username)
 
-def open_admin_ui():
-    open_admin_window()
-
-def open_main_window():
+def open_main_window(username):
     window = tk.Tk()
     window.title("Student Management System - Main Menu")
-    window.geometry("400x300")
+    window.geometry("400x400")
     window.resizable(False, False)
 
-    tk.Label(window, text="Welcome to the Student Management System", font=("Helvetica", 12, "bold")).pack(pady=15)
+    # Show the logged-in user
+    tk.Label(window, text=f"Logged in as: {username}", fg="blue").pack(pady=5)
+    tk.Label(window, text="Welcome to the Student Management System", font=("Helvetica", 12, "bold")).pack(pady=10)
 
-    tk.Button(window, text="Manage Students", width=25, command=open_student_ui).pack(pady=5)
-    tk.Button(window, text="Manage Courses", width=25, command=open_course_ui).pack(pady=5)
-    tk.Button(window, text="Manage Grades", width=25, command=open_grade_ui).pack(pady=5)
-    tk.Button(window, text="Manage Attendance", width=25, command=open_attendance_ui).pack(pady=5)
+    # Buttons
+    tk.Button(window, text="Manage Students", width=25, command=lambda: open_student_ui(username)).pack(pady=5)
+    tk.Button(window, text="Manage Courses", width=25, command=lambda: open_course_ui(username)).pack(pady=5)
+    tk.Button(window, text="Manage Grades", width=25, command=lambda: open_grade_ui(username)).pack(pady=5)
+    tk.Button(window, text="Manage Attendance", width=25, command=lambda: open_attendance_ui(username)).pack(pady=5)
+    tk.Button(window, text="Manage Admins", width=25, command=lambda: open_admin_ui(username)).pack(pady=5)
     tk.Button(window, text="Exit", width=25, command=window.destroy).pack(pady=10)
-    tk.Button(window, text="Manage Admins", width=25, command=open_admin_ui).pack(pady=5)
-
 
     window.mainloop()

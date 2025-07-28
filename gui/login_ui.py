@@ -1,4 +1,5 @@
 # gui/login_ui.py
+
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -7,9 +8,13 @@ import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
 from config import DB_CONFIG
-from gui.main_ui import open_main_window  
+from gui.main_ui import open_main_window  # Accepts username
+
+# Global to store logged-in username
+logged_in_user = None
 
 def login():
+    global logged_in_user
     username = username_entry.get()
     password = password_entry.get()
 
@@ -21,11 +26,11 @@ def login():
         conn.close()
 
         if result:
+            logged_in_user = username
             root.destroy()
-            open_main_window()
+            open_main_window(logged_in_user)  # Pass username
         else:
             messagebox.showerror("Login Failed", "Invalid username or password.")
-
     except mysql.connector.Error as err:
         messagebox.showerror("Database Error", str(err))
 
