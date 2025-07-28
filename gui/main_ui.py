@@ -6,7 +6,7 @@ from gui.student_ui import open_student_window #for the student window
 from gui.course_ui import open_course_window #for the course
 from gui.grade_ui import open_grade_window #for the grade
 from gui.attendance_ui import open_attendance_window #for the attendance
-
+from gui.admin_ui import open_admin_window #for the admin operations
 
 def open_student_ui():
     open_student_window()
@@ -21,6 +21,9 @@ def open_grade_ui():
 def open_attendance_ui():
     open_attendance_window()
 
+def open_admin_ui():
+    open_admin_window()
+
 def open_main_window():
     window = tk.Tk()
     window.title("Student Management System - Main Menu")
@@ -34,5 +37,7 @@ def open_main_window():
     tk.Button(window, text="Manage Grades", width=25, command=open_grade_ui).pack(pady=5)
     tk.Button(window, text="Manage Attendance", width=25, command=open_attendance_ui).pack(pady=5)
     tk.Button(window, text="Exit", width=25, command=window.destroy).pack(pady=10)
+    tk.Button(window, text="Manage Admins", width=25, command=open_admin_ui).pack(pady=5)
+
 
     window.mainloop()
