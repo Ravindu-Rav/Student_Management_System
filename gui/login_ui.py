@@ -1,10 +1,13 @@
 # gui/login_ui.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import tkinter as tk
 from tkinter import messagebox
 import mysql.connector
 from config import DB_CONFIG
-from gui.main_ui import open_main_window  # You will create this next
+from gui.main_ui import open_main_window  
 
 def login():
     username = username_entry.get()
