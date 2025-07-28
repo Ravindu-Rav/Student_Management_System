@@ -2,19 +2,24 @@
 
 import tkinter as tk
 from tkinter import messagebox
-from gui.student_ui import open_student_window
+from gui.student_ui import open_student_window #for the student window
+from gui.course_ui import open_course_window #for the course
+from gui.grade_ui import open_grade_window #for the grade
+from gui.attendance_ui import open_attendance_window #for the attendance
+
 
 def open_student_ui():
     open_student_window()
 
 def open_course_ui():
-    messagebox.showinfo("Course", "Course Management UI coming soon!")
+    open_course_window()
+
 
 def open_grade_ui():
-    messagebox.showinfo("Grades", "Grades Management UI coming soon!")
+    open_grade_window()
 
 def open_attendance_ui():
-    messagebox.showinfo("Attendance", "Attendance Management UI coming soon!")
+    open_attendance_window()
 
 def open_main_window():
     window = tk.Tk()
