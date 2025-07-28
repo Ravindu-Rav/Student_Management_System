@@ -51,7 +51,15 @@ def view_grades(listbox):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
 
-def open_grade_window():
+def open_grade_window(username):
+
+    window = tk.Toplevel()
+    window.title("Manage Students")
+    window.geometry("600x400")
+
+    tk.Label(window, text=f"Logged in as: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
+
+
     window = tk.Toplevel()
     window.title("Manage Grades")
     window.geometry("600x400")
