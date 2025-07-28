@@ -2,9 +2,10 @@
 
 import tkinter as tk
 from tkinter import messagebox
+from gui.student_ui import open_student_window
 
 def open_student_ui():
-    messagebox.showinfo("Student", "Student Management UI coming soon!")
+    open_student_window()
 
 def open_course_ui():
     messagebox.showinfo("Course", "Course Management UI coming soon!")
