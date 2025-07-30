@@ -1,7 +1,7 @@
 # gui/main_ui.py
 
-import tkinter as tk
-from tkinter import messagebox
+import ttkbootstrap as ttk
+from ttkbootstrap.constants import *
 from gui.student_ui import open_student_window
 from gui.course_ui import open_course_window
 from gui.grade_ui import open_grade_window
@@ -24,21 +24,35 @@ def open_admin_ui(username):
     open_admin_window(username)
 
 def open_main_window(username):
-    window = tk.Tk()
+    window = ttk.Window(themename="flatly")
     window.title("Student Management System - Main Menu")
-    window.geometry("400x400")
+
+    # Set fixed size window and disable resizing (no minimize/maximize)
+    window_width = 500
+    window_height = 500
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    center_x = int(screen_width / 2 - window_width / 2)
+    center_y = int(screen_height / 2 - window_height / 2)
+    window.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+
+    # Disable resizing = disables maximize and minimize buttons in most OS
     window.resizable(False, False)
 
-    # Show the logged-in user
-    tk.Label(window, text=f"Welcome: {username}", fg="blue").pack(pady=5)
-    tk.Label(window, text="Welcome to the Student Management System", font=("Helvetica", 12, "bold")).pack(pady=10)
+    container = ttk.Frame(window, padding=30)
+    container.pack(fill="both", expand=True)
 
-    # Buttons
-    tk.Button(window, text="Manage Students", width=25, command=lambda: open_student_ui(username)).pack(pady=5)
-    tk.Button(window, text="Manage Courses", width=25, command=lambda: open_course_ui(username)).pack(pady=5)
-    tk.Button(window, text="Manage Grades", width=25, command=lambda: open_grade_ui(username)).pack(pady=5)
-    tk.Button(window, text="Manage Attendance", width=25, command=lambda: open_attendance_ui(username)).pack(pady=5)
-    tk.Button(window, text="Manage Admins", width=25, command=lambda: open_admin_ui(username)).pack(pady=5)
-    tk.Button(window, text="Exit", width=25, command=window.destroy).pack(pady=10)
+    ttk.Label(container, text=f"Welcome, {username}!", font=("Helvetica", 14, "bold"), foreground="blue").pack(pady=(0, 10))
+    ttk.Label(container, text="Student Management System", font=("Helvetica", 16, "bold")).pack(pady=(0, 30))
+
+    def create_button(text, command, style=PRIMARY):
+        ttk.Button(container, text=text, width=30, bootstyle=style, command=command).pack(pady=8)
+
+    create_button("Manage Students", lambda: open_student_ui(username), SUCCESS)
+    create_button("Manage Courses", lambda: open_course_ui(username), INFO)
+    create_button("Manage Grades", lambda: open_grade_ui(username), WARNING)
+    create_button("Manage Attendance", lambda: open_attendance_ui(username), SECONDARY)
+    create_button("Manage Admins", lambda: open_admin_ui(username), DANGER)
+    create_button("Exit", window.destroy, DARK)
 
     window.mainloop()

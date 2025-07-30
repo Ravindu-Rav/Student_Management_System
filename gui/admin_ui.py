@@ -88,7 +88,7 @@ def open_admin_window(username):
     admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     # Replacing Text widget with Listbox
-    admin_listbox = tk.Listbox(container, height=10, font=("Courier New", 10))
+    admin_listbox = ttk.Listbox(container, height=10, font=("Courier New", 10))
     admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
     ttk.Button(container, text="Refresh Admin List", bootstyle=INFO,
