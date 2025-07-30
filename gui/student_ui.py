@@ -6,13 +6,42 @@ import tkinter as tk
 from tkinter import messagebox, font
 import mysql.connector
 from config import DB_CONFIG
+import datetime
+
+def is_valid_date(date_str):
+    try:
+        datetime.datetime.strptime(date_str, "%Y-%m-%d")
+        return True
+    except ValueError:
+        return False
 
 def add_student(name, email, phone, date):
+    # Validation: prevent empty or blank inputs
+    if not name.strip():
+        messagebox.showwarning("Validation Error", "Full Name cannot be empty.")
+        return
+    if not email.strip():
+        messagebox.showwarning("Validation Error", "Email cannot be empty.")
+        return
+    if not phone.strip():
+        messagebox.showwarning("Validation Error", "Phone cannot be empty.")
+        return
+    if not date.strip():
+        messagebox.showwarning("Validation Error", "Enrollment Date cannot be empty.")
+        return
+
+    # Validate date format
+    if not is_valid_date(date):
+        messagebox.showwarning("Validation Error", "Enrollment Date must be in YYYY-MM-DD format.")
+        return
+
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO students (full_name, email, phone, enrollment_date) VALUES (%s, %s, %s, %s)",
-                       (name, email, phone, date))
+        cursor.execute(
+            "INSERT INTO students (full_name, email, phone, enrollment_date) VALUES (%s, %s, %s, %s)",
+            (name, email, phone, date)
+        )
         conn.commit()
         conn.close()
         messagebox.showinfo("Success", "Student added successfully.")
@@ -20,6 +49,10 @@ def add_student(name, email, phone, date):
         messagebox.showerror("Error", str(err))
 
 def delete_student(student_id):
+    if not student_id.strip():
+        messagebox.showwarning("Validation Error", "Please enter a student ID to delete.")
+        return
+
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
