@@ -47,16 +47,11 @@ def delete_admin(admin_id):
 def open_admin_window(username):
     
     window = tk.Toplevel()
-    window.title("Manage Students")
-    window.geometry("600x400")
-
-    tk.Label(window, text=f"Logged in as: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
-
-
-
-    window = tk.Toplevel()
     window.title("Admin Management")
     window.geometry("500x400")
+
+    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
+
 
     # Form to add new admin
     tk.Label(window, text="Username").grid(row=0, column=0)

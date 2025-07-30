@@ -30,7 +30,7 @@ def open_main_window(username):
     window.resizable(False, False)
 
     # Show the logged-in user
-    tk.Label(window, text=f"Logged in as: {username}", fg="blue").pack(pady=5)
+    tk.Label(window, text=f"Welcome: {username}", fg="blue").pack(pady=5)
     tk.Label(window, text="Welcome to the Student Management System", font=("Helvetica", 12, "bold")).pack(pady=10)
 
     # Buttons
