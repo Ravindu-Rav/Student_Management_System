@@ -1,5 +1,3 @@
-# gui/admin_ui.py
-
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -45,22 +43,21 @@ def delete_admin(admin_id):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
 
+def center_window(win, width, height):
+    screen_width = win.winfo_screenwidth()
+    screen_height = win.winfo_screenheight()
+    x = (screen_width - width) // 2
+    y = (screen_height - height) // 2
+    win.geometry(f"{width}x{height}+{x}+{y}")
+
 def open_admin_window(username):
-    window = ttk.Toplevel(themename="flatly")  # Theme: flatly (light), use 'darkly' or 'superhero' for dark themes
+    window = ttk.Toplevel(themename="flatly")  # Theme: flatly (light), change if you want a different one
     window.title("Admin Management")
+    window.resizable(True, True)
 
-    # Set size and center the window
-    window_width = 700
-    window_height = 550
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-    center_x = int(screen_width / 2 - window_width / 2)
-    center_y = int(screen_height / 2 - window_height / 2)
-    window.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+    width, height = 700, 550
+    center_window(window, width, height)
 
-    window.resizable(True, True)  # Enable maximize/minimize
-
-    # Main container
     container = ttk.Frame(window, padding=20)
     container.pack(fill=BOTH, expand=True)
 
@@ -84,10 +81,6 @@ def open_admin_window(username):
 
     # Admin list
     ttk.Label(container, text="Admin List:").pack(anchor=W, pady=(15, 5))
-    admin_listbox = ttk.Text(container, height=10, font=("Courier New", 10))
-    admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
-
-    # Replacing Text widget with Listbox
     admin_listbox = ttk.Listbox(container, height=10, font=("Courier New", 10))
     admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
