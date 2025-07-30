@@ -11,6 +11,7 @@ import mysql.connector
 from config import DB_CONFIG
 from gui.main_ui import open_main_window
 
+# Global to store logged-in username
 logged_in_user = None
 
 def login():
@@ -34,13 +35,24 @@ def login():
     except mysql.connector.Error as err:
         messagebox.showerror("Database Error", str(err))
 
-# Setup ttkbootstrap window
-root = ttk.Window(themename="flatly")  # Options: flatly, darkly, journal, morph, etc.
+# ------------------------
+# Tkinter + ttkbootstrap UI setup
+# ------------------------
+
+root = ttk.Window(themename="flatly")  # Try also: darkly, morph, journal, etc.
 root.title("Admin Login")
-root.geometry("400x280")
 root.resizable(False, False)
 
-# Centered frame
+# Center the window on the screen
+window_width = 400
+window_height = 280
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
+center_x = int(screen_width / 2 - window_width / 2)
+center_y = int(screen_height / 2 - window_height / 2)
+root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+
+# Frame for layout
 frame = ttk.Frame(root, padding=30)
 frame.place(relx=0.5, rely=0.5, anchor=CENTER)
 
