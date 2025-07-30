@@ -8,20 +8,25 @@ from gui.grade_ui import open_grade_window
 from gui.attendance_ui import open_attendance_window
 from gui.admin_ui import open_admin_window
 
-def open_student_ui(username):
+def open_student_ui(username, main_window):
     open_student_window(username)
+    main_window.withdraw()
 
-def open_course_ui(username):
+def open_course_ui(username, main_window):
     open_course_window(username)
+    main_window.withdraw()
 
-def open_grade_ui(username):
+def open_grade_ui(username, main_window):
     open_grade_window(username)
+    main_window.withdraw()
 
-def open_attendance_ui(username):
+def open_attendance_ui(username, main_window):
     open_attendance_window(username)
+    main_window.withdraw()
 
-def open_admin_ui(username):
+def open_admin_ui(username, main_window):
     open_admin_window(username)
+    main_window.withdraw()
 
 def open_main_window(username):
     window = ttk.Window(themename="flatly")
@@ -48,11 +53,11 @@ def open_main_window(username):
     def create_button(text, command, style=PRIMARY):
         ttk.Button(container, text=text, width=30, bootstyle=style, command=command).pack(pady=8)
 
-    create_button("Manage Students", lambda: open_student_ui(username), SUCCESS)
-    create_button("Manage Courses", lambda: open_course_ui(username), INFO)
-    create_button("Manage Grades", lambda: open_grade_ui(username), WARNING)
-    create_button("Manage Attendance", lambda: open_attendance_ui(username), SECONDARY)
-    create_button("Manage Admins", lambda: open_admin_ui(username), DANGER)
+    create_button("Manage Students", lambda: open_student_ui(username, window), SUCCESS)
+    create_button("Manage Courses", lambda: open_course_ui(username, window), INFO)
+    create_button("Manage Grades", lambda: open_grade_ui(username, window), WARNING)
+    create_button("Manage Attendance", lambda: open_attendance_ui(username, window), SECONDARY)
+    create_button("Manage Admins", lambda: open_admin_ui(username, window), DANGER)
     create_button("Exit", window.destroy, DARK)
 
     window.mainloop()
