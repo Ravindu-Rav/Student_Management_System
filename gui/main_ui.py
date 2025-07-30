@@ -9,7 +9,7 @@ from gui.attendance_ui import open_attendance_window
 from gui.admin_ui import open_admin_window
 
 def open_student_ui(username, main_window):
-    open_student_window(username)
+    open_student_window(username,main_window)
     main_window.withdraw()
 
 def open_course_ui(username, main_window):
