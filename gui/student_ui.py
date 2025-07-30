@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import tkinter as tk
 from tkinter import messagebox, font
+from ttkbootstrap import DateEntry
 import mysql.connector
 from config import DB_CONFIG
 import datetime
@@ -15,8 +16,10 @@ def is_valid_date(date_str):
     except ValueError:
         return False
 
+def is_valid_sri_lankan_phone(phone):
+    return phone.isdigit() and len(phone) == 10 and phone.startswith("0")
+
 def add_student(name, email, phone, date):
-    # Validation: prevent empty or blank inputs
     if not name.strip():
         messagebox.showwarning("Validation Error", "Full Name cannot be empty.")
         return
@@ -30,7 +33,10 @@ def add_student(name, email, phone, date):
         messagebox.showwarning("Validation Error", "Enrollment Date cannot be empty.")
         return
 
-    # Validate date format
+    if not is_valid_sri_lankan_phone(phone):
+        messagebox.showwarning("Validation Error", "Phone number must be a valid Sri Lankan number (10 digits starting with 0).")
+        return
+
     if not is_valid_date(date):
         messagebox.showwarning("Validation Error", "Enrollment Date must be in YYYY-MM-DD format.")
         return
@@ -72,7 +78,6 @@ def view_students(listbox):
         rows = cursor.fetchall()
         conn.close()
         for row in rows:
-            # ID | full_name | email | phone | enrollment_date
             listbox.insert(tk.END, f"ID: {row[0]} | {row[1]} | {row[2]} | {row[3]} | {row[4]}")
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
@@ -113,12 +118,12 @@ def open_student_window(username):
     phone_entry = tk.Entry(window, width=30, font=entry_font)
     phone_entry.grid(row=3, column=1, sticky="w", pady=8)
 
-    tk.Label(window, text="Enrollment Date (YYYY-MM-DD)", font=label_font).grid(row=4, column=0, sticky="e", padx=10, pady=8)
-    date_entry = tk.Entry(window, width=30, font=entry_font)
+    tk.Label(window, text="Enrollment Date", font=label_font).grid(row=4, column=0, sticky="e", padx=10, pady=8)
+    date_entry = DateEntry(window, width=27, bootstyle="info", dateformat="%Y-%m-%d")
     date_entry.grid(row=4, column=1, sticky="w", pady=8)
 
     tk.Button(window, text="Add Student", font=label_font,
-              command=lambda: add_student(name_entry.get(), email_entry.get(), phone_entry.get(), date_entry.get())
+              command=lambda: add_student(name_entry.get(), email_entry.get(), phone_entry.get(), date_entry.entry.get())
               ).grid(row=5, column=1, sticky="w", pady=12)
 
     # Listbox for Students
