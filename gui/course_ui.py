@@ -45,14 +45,13 @@ def view_courses(listbox):
 
 def open_course_window(username):
 
-  
-    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
-
-
-
     window = tk.Toplevel()
     window.title("Manage Courses")
     window.geometry("600x400")
+
+    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
+
+
 
     # Form
     tk.Label(window, text="Course Name").grid(row=0, column=0)

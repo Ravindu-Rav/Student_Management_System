@@ -53,14 +53,13 @@ def view_grades(listbox):
 
 def open_grade_window(username):
 
-
-
-    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
-
-
     window = tk.Toplevel()
     window.title("Manage Grades")
     window.geometry("600x400")
+
+    
+    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
+
 
     # Form
     tk.Label(window, text="Student ID").grid(row=0, column=0)

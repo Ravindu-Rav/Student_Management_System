@@ -48,14 +48,13 @@ def view_students(listbox):
 
 def open_student_window(username):
 
+    window = tk.Toplevel()
+    window.title("Manage Students")
+    window.geometry("600x400")
 
     tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
 
 
-
-    window = tk.Toplevel()
-    window.title("Manage Students")
-    window.geometry("600x400")
 
     # Form
     tk.Label(window, text="Full Name").grid(row=0, column=0)

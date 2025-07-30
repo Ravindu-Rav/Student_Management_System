@@ -57,12 +57,12 @@ def view_attendance(listbox):
 def open_attendance_window(username):
 
 
-    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
-
-
     window = tk.Toplevel()
     window.title("Manage Attendance")
     window.geometry("700x400")
+
+    tk.Label(window, text=f"Welcome: {username}", fg="blue").grid(row=0, column=0, columnspan=2, pady=5)
+
 
     # Form
     tk.Label(window, text="Student ID").grid(row=0, column=0)
