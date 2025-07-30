@@ -45,45 +45,54 @@ def delete_admin(admin_id):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
 
-def center_window(window, width, height):
+def open_admin_window(username):
+    window = ttk.Toplevel(themename="flatly")  # Theme: flatly (light), use 'darkly' or 'superhero' for dark themes
+    window.title("Admin Management")
+
+    # Set size and center the window
+    window_width = 700
+    window_height = 550
     screen_width = window.winfo_screenwidth()
     screen_height = window.winfo_screenheight()
-    center_x = int(screen_width / 2 - width / 2)
-    center_y = int(screen_height / 2 - height / 2)
-    window.geometry(f"{width}x{height}+{center_x}+{center_y}")
+    center_x = int(screen_width / 2 - window_width / 2)
+    center_y = int(screen_height / 2 - window_height / 2)
+    window.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
 
-def open_admin_window(username):
-    window = ttk.Toplevel(themename="flatly")  # Same theme as login
-    window.title("Admin Management")
-    center_window(window, 600, 450)
-    window.resizable(False, False)
+    window.resizable(True, True)  # Enable maximize/minimize
 
+    # Main container
     container = ttk.Frame(window, padding=20)
     container.pack(fill=BOTH, expand=True)
 
-    ttk.Label(container, text=f"Welcome: {username}", font=("Helvetica", 14, "bold"), foreground="blue").pack(anchor=W, pady=(0, 10))
+    ttk.Label(container, text=f"Welcome: {username}", font=("Helvetica", 14, "bold"), foreground="blue").pack(anchor=W, pady=(0, 15))
 
+    # Admin form
     form_frame = ttk.Frame(container)
     form_frame.pack(fill=X, pady=10)
 
-    ttk.Label(form_frame, text="Username").grid(row=0, column=0, sticky=W, padx=5, pady=5)
-    username_entry = ttk.Entry(form_frame, width=30)
-    username_entry.grid(row=0, column=1, padx=5, pady=5)
+    ttk.Label(form_frame, text="Username").grid(row=0, column=0, sticky=W, padx=5, pady=8)
+    username_entry = ttk.Entry(form_frame, width=40)
+    username_entry.grid(row=0, column=1, padx=5, pady=8)
 
-    ttk.Label(form_frame, text="Password").grid(row=1, column=0, sticky=W, padx=5, pady=5)
-    password_entry = ttk.Entry(form_frame, width=30, show="*")
-    password_entry.grid(row=1, column=1, padx=5, pady=5)
+    ttk.Label(form_frame, text="Password").grid(row=1, column=0, sticky=W, padx=5, pady=8)
+    password_entry = ttk.Entry(form_frame, width=40, show="*")
+    password_entry.grid(row=1, column=1, padx=5, pady=8)
 
     ttk.Button(form_frame, text="Add Admin", bootstyle=SUCCESS,
                command=lambda: add_admin(username_entry.get(), password_entry.get())
                ).grid(row=2, column=1, sticky=E, padx=5, pady=10)
 
     # Admin list
-    ttk.Label(container, text="Admin List:").pack(anchor=W)
-    admin_listbox = tk.Listbox(container, height=10, width=70, font=("Courier", 10))
-    admin_listbox.pack(pady=5)
+    ttk.Label(container, text="Admin List:").pack(anchor=W, pady=(15, 5))
+    admin_listbox = ttk.Text(container, height=10, font=("Courier New", 10))
+    admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
-    ttk.Button(container, text="Refresh Admin List", bootstyle=INFO, command=lambda: view_admins(admin_listbox)).pack(pady=(0, 10))
+    # Replacing Text widget with Listbox
+    admin_listbox = tk.Listbox(container, height=10, font=("Courier New", 10))
+    admin_listbox.pack(fill=BOTH, expand=True, padx=5, pady=5)
+
+    ttk.Button(container, text="Refresh Admin List", bootstyle=INFO,
+               command=lambda: view_admins(admin_listbox)).pack(pady=(5, 15))
 
     # Delete admin
     delete_frame = ttk.Frame(container)
@@ -93,7 +102,8 @@ def open_admin_window(username):
     delete_entry = ttk.Entry(delete_frame, width=20)
     delete_entry.grid(row=0, column=1, padx=5)
 
-    ttk.Button(delete_frame, text="Delete Admin", bootstyle=DANGER, command=lambda: delete_admin(delete_entry.get())).grid(row=0, column=2, padx=10)
+    ttk.Button(delete_frame, text="Delete Admin", bootstyle=DANGER,
+               command=lambda: delete_admin(delete_entry.get())).grid(row=0, column=2, padx=10)
 
-    # Load initial list
+    # Load initial data
     view_admins(admin_listbox)
