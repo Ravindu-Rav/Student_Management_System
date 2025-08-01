@@ -1,64 +1,106 @@
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
+import sys
+from PySide6.QtWidgets import (
+    QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QApplication, QFrame
+)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 from gui.student_ui import open_student_window
 from gui.course_ui import open_course_window
 from gui.grade_ui import open_grade_window
 from gui.attendance_ui import open_attendance_window
 from gui.admin_ui import open_admin_window
-
-def open_student_ui(username, main_window):
-    open_student_window(username, main_window)
-    main_window.withdraw()
-
-def open_course_ui(username, main_window):
-    open_course_window(username, main_window)
-    main_window.withdraw()
-
-def open_grade_ui(username, main_window):
-    open_grade_window(username, main_window)
-    main_window.withdraw()
-
-def open_attendance_ui(username, main_window):
-    open_attendance_window(username, main_window)
-    main_window.withdraw()
-
-def open_admin_ui(username, main_window):
-    open_admin_window(username, main_window)
-    main_window.withdraw()
+# Add globals for subwindows so they don’t get GC'ed
+sub_windows = {}
 
 def open_main_window(username):
-    window = ttk.Window(themename="flatly")  # same light theme
-    window.title("Student Management System - Main Menu")
+    global main_window_instance
+    global sub_windows
 
-    window_width = 500
-    window_height = 500
-    screen_width = window.winfo_screenwidth()
-    screen_height = window.winfo_screenheight()
-    center_x = int(screen_width / 2 - window_width / 2)
-    center_y = int(screen_height / 2 - window_height / 2)
-    window.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+    app = QApplication.instance()
+    if app is None:
+        app = QApplication(sys.argv)
 
-    window.resizable(False, False)
+    main_window_instance = QWidget()
+    window = main_window_instance
+    window.setWindowTitle("Dashboard | Student Management System")
+    window.setFixedSize(700, 550)
 
-    container = ttk.Frame(window, padding=30)
-    container.pack(fill="both", expand=True)
+    screen = window.screen().geometry()
+    center_x = int(screen.width() / 2 - window.width() / 2)
+    center_y = int(screen.height() / 2 - window.height() / 2)
+    window.setGeometry(center_x, center_y, 700, 550)
 
-    # Use consistent colors: dark slate gray for text, soft lavender bg handled by theme
-    dark_text_color = "#2F4F4F"
-    warm_coral = "#FF6F61"
+    main_layout = QVBoxLayout(window)
+    main_layout.setContentsMargins(50, 40, 50, 40)
+    main_layout.setSpacing(30)
 
-    ttk.Label(container, text=f"Welcome, {username}!", font=("Helvetica", 14, "bold"), foreground=dark_text_color).pack(pady=(0, 10))
-    ttk.Label(container, text="Student Management System", font=("Helvetica", 16, "bold"), foreground=dark_text_color).pack(pady=(0, 30))
+    title_label = QLabel(f"🎓 Welcome, {username}!")
+    title_label.setFont(QFont("Segoe UI", 26, QFont.Bold))
+    title_label.setStyleSheet("color: #FFFFFF;")
+    title_label.setAlignment(Qt.AlignCenter)
 
-    def create_button(text, command, style=PRIMARY):
-        ttk.Button(container, text=text, width=30, bootstyle=style, command=command).pack(pady=8)
+    subtitle_label = QLabel("Choose a section to manage:")
+    subtitle_label.setFont(QFont("Segoe UI", 14))
+    subtitle_label.setStyleSheet("color: #FFFFFF;")
+    subtitle_label.setAlignment(Qt.AlignCenter)
 
-    # Use warm coral (warning) for important actions, soft blues for info, neutrals for others
-    create_button("Manage Students", lambda: open_student_ui(username, window), WARNING)   # coral warm
-    create_button("Manage Courses", lambda: open_course_ui(username, window), INFO)         # blue info
-    create_button("Manage Grades", lambda: open_grade_ui(username, window), SECONDARY)      # gray secondary
-    create_button("Manage Attendance", lambda: open_attendance_ui(username, window), PRIMARY)  # default primary blue
-    create_button("Manage Admins", lambda: open_admin_ui(username, window), DANGER)         # red danger for admin management
-    create_button("Exit", window.destroy, SECONDARY)                                        # neutral gray exit button
+    main_layout.addWidget(title_label)
+    main_layout.addWidget(subtitle_label)
 
-    window.mainloop()
+    def create_button(text, icon, handler, color="#1abc9c", hover="#16a085"):
+        btn = QPushButton(f"{icon}  {text}")
+        btn.setFixedHeight(50)
+        btn.setFont(QFont("Segoe UI", 13, QFont.Bold))
+        btn.setCursor(Qt.PointingHandCursor)
+        btn.clicked.connect(handler)
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {color};
+                color: white;
+                border-radius: 14px;
+                border: none;
+            }}
+            QPushButton:hover {{
+                background-color: {hover};
+            }}
+            QPushButton:pressed {{
+                background-color: #0f6657;
+            }}
+        """)
+        return btn
+
+    def open_student():
+        # Create and store subwindow reference to keep alive
+        sub_windows['student'] = open_student_window(username,window)
+        window.hide()  # hide main while sub window is open
+
+    def open_course():
+        sub_windows['course'] = open_course_window(username, window)
+        window.hide()
+
+    def open_grade():
+        sub_windows['grade'] = open_grade_window(username, window)
+        window.hide()
+
+    def open_attendance():
+        sub_windows['attendance'] = open_attendance_window(username, window)
+        window.hide()
+
+    def open_admin():
+        sub_windows['admin'] = open_admin_window(username, window)
+        window.hide()
+
+    button_frame = QFrame()
+    button_layout = QVBoxLayout(button_frame)
+    button_layout.setSpacing(15)
+
+    button_layout.addWidget(create_button("Manage Students  ", "🧑‍🎓", open_student))
+    button_layout.addWidget(create_button("Manage Courses   ", "📘", open_course))
+    button_layout.addWidget(create_button("Manage Grades    ", "📊", open_grade))
+    button_layout.addWidget(create_button("Manage Attendance", "🗓️", open_attendance))
+    button_layout.addWidget(create_button("Manage Admins    ", "👩‍💼", open_admin))
+    button_layout.addWidget(create_button("Exit             ", "❌", window.close, "#e74c3c", "#c0392b"))
+
+    main_layout.addWidget(button_frame)
+
+    window.show()

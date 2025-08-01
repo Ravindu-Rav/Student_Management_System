@@ -1,164 +1,284 @@
-import sys
-import os
-import tkinter as tk
-from tkinter import messagebox, font
+from PySide6.QtWidgets import (
+    QWidget, QLabel, QComboBox, QPushButton, QVBoxLayout, QHBoxLayout, QFormLayout,
+    QMessageBox, QApplication, QLineEdit, QFrame, QTableWidget, QTableWidgetItem
+)
+from PySide6.QtGui import QFont
+from PySide6.QtCore import Qt
 import mysql.connector
 
-# Adjust path to access config
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import DB_CONFIG
 
-# --- Fetch Courses from DB ---
-def fetch_courses():
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("SELECT id, course_name FROM courses")
-        results = cursor.fetchall()
-        conn.close()
-        return results
-    except mysql.connector.Error as err:
-        messagebox.showerror("Database Error", str(err))
-        return []
 
-# --- CRUD Operations ---
-def assign_grade(student_id, course_id, grade):
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("INSERT INTO grades (student_id, course_id, grade) VALUES (%s, %s, %s)",
-                       (student_id, course_id, grade))
-        conn.commit()
-        conn.close()
-        messagebox.showinfo("Success", "Grade assigned successfully.")
-    except mysql.connector.Error as err:
-        messagebox.showerror("Error", str(err))
+def open_grade_window(username, main_window=None):
+    window = QWidget()
+    window.setWindowTitle("Manage Grades")
+    window.setFixedSize(1000, 700)
 
-def update_grade(grade_id, student_id, course_id, grade):
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("UPDATE grades SET student_id = %s, course_id = %s, grade = %s WHERE id = %s",
-                       (student_id, course_id, grade, grade_id))
-        conn.commit()
-        conn.close()
-        messagebox.showinfo("Success", "Grade updated successfully.")
-    except mysql.connector.Error as err:
-        messagebox.showerror("Error", str(err))
+    screen = QApplication.primaryScreen().geometry()
+    center_x = int(screen.width() / 2 - window.width() / 2)
+    center_y = int(screen.height() / 2 - window.height() / 2)
+    window.setGeometry(center_x, center_y, 1000, 700)
 
-def delete_grade(grade_id):
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("DELETE FROM grades WHERE id = %s", (grade_id,))
-        conn.commit()
-        conn.close()
-        messagebox.showinfo("Success", "Grade deleted successfully.")
-    except mysql.connector.Error as err:
-        messagebox.showerror("Error", str(err))
+    main_layout = QVBoxLayout(window)
+    main_layout.setContentsMargins(40, 30, 40, 30)
+    main_layout.setSpacing(20)
 
-def view_grades(listbox):
-    listbox.delete(0, tk.END)
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        query = """
-        SELECT g.id, s.full_name, c.course_name, g.grade
-        FROM grades g
-        JOIN students s ON g.student_id = s.id
-        JOIN courses c ON g.course_id = c.id
-        """
-        cursor.execute(query)
-        rows = cursor.fetchall()
-        conn.close()
-        for row in rows:
-            listbox.insert(tk.END, f"Grade ID: {row[0]} | {row[1]} | {row[2]} | Grade: {row[3]}")
-    except mysql.connector.Error as err:
-        messagebox.showerror("Error", str(err))
+    title = QLabel(f"🎓 Manage Grades | Welcome, {username}")
+    title.setFont(QFont("Segoe UI", 18, QFont.Bold))
+    title.setAlignment(Qt.AlignCenter)
+    title.setStyleSheet("color: #FFFFFF;")
+    main_layout.addWidget(title)
 
-# --- Main UI ---
-def open_grade_window(username, main_window):
-    window = tk.Toplevel()
-    window.title("Manage Grades")
-    window.geometry("800x650")
-    window.configure(bg="#f0f0f0")
+    # --- Form Section ---
+    form_layout = QFormLayout()
+    form_layout.setLabelAlignment(Qt.AlignRight)
 
-    header_font = font.Font(family="Helvetica", size=14, weight="bold")
-    label_font = font.Font(family="Helvetica", size=11)
-    entry_font = font.Font(family="Helvetica", size=11)
-    button_font = font.Font(family="Helvetica", size=11, weight="bold")
+    student_combo = QComboBox()
+    course_combo = QComboBox()
+    grade_input = QLineEdit()
 
-    tk.Label(window, text=f"Welcome: {username}", fg="blue", bg="#f0f0f0", font=header_font).pack(pady=10)
+    grade_input.setPlaceholderText("Enter Grade (e.g. A, B+, 90)")
 
-    form_frame = tk.Frame(window, bg="#f0f0f0")
-    form_frame.pack(pady=10)
+    for widget in (student_combo, course_combo, grade_input):
+        widget.setFont(QFont("Segoe UI", 11))
 
-    # --- Input Fields ---
-    tk.Label(form_frame, text="Grade ID (for Update)", font=label_font, bg="#f0f0f0").grid(row=0, column=0, sticky="e", padx=10, pady=5)
-    grade_id_entry = tk.Entry(form_frame, font=entry_font, width=30)
-    grade_id_entry.grid(row=0, column=1, pady=5)
+    input_style = """
+        QComboBox, QLineEdit {
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+        }
+        QComboBox:focus, QLineEdit:focus {
+            border-color: #3498db;
+        }
+    """
+    student_combo.setStyleSheet(input_style)
+    course_combo.setStyleSheet(input_style)
+    grade_input.setStyleSheet(input_style)
 
-    tk.Label(form_frame, text="Student ID", font=label_font, bg="#f0f0f0").grid(row=1, column=0, sticky="e", padx=10, pady=5)
-    student_entry = tk.Entry(form_frame, font=entry_font, width=30)
-    student_entry.grid(row=1, column=1, pady=5)
+    form_layout.addRow("Student:", student_combo)
+    form_layout.addRow("Course:", course_combo)
+    form_layout.addRow("Grade:", grade_input)
 
-    # --- Course Dropdown ---
-    tk.Label(form_frame, text="Select Course", font=label_font, bg="#f0f0f0").grid(row=2, column=0, sticky="e", padx=10, pady=5)
-    courses = fetch_courses()
-    course_options = {name: cid for cid, name in courses}
-    selected_course_name = tk.StringVar(value=list(course_options.keys())[0] if course_options else "")
-    course_dropdown = tk.OptionMenu(form_frame, selected_course_name, *course_options.keys())
-    course_dropdown.config(width=28, font=entry_font)
-    course_dropdown.grid(row=2, column=1, sticky="w", pady=5)
+    form_frame = QFrame()
+    form_frame.setLayout(form_layout)
+    main_layout.addWidget(form_frame)
 
-    # --- Grade Dropdown ---
-    tk.Label(form_frame, text="Grade (A-F)", font=label_font, bg="#f0f0f0").grid(row=3, column=0, sticky="e", padx=10, pady=5)
-    grade_options = ["A", "B", "C", "D", "E", "F"]
-    selected_grade = tk.StringVar(value="A")
-    grade_dropdown = tk.OptionMenu(form_frame, selected_grade, *grade_options)
-    grade_dropdown.config(width=28, font=entry_font)
-    grade_dropdown.grid(row=3, column=1, sticky="w", pady=5)
+    # --- Grade Table ---
+    grade_table = QTableWidget()
+    grade_table.setColumnCount(4)
+    grade_table.setHorizontalHeaderLabels(["ID", "Student", "Course", "Grade"])
+    grade_table.setEditTriggers(QTableWidget.NoEditTriggers)
+    grade_table.setSelectionBehavior(QTableWidget.SelectRows)
+    grade_table.setStyleSheet("""
+        QTableWidget {
+            border: 1px solid #bdc3c7;
+            border-radius: 10px;
+            background-color: #ffffff;
+            color: #2c3e50;
+            gridline-color: #bdc3c7;
+        }
+        QHeaderView::section {
+            background-color: #3498db;
+             color: #2c3e50;
+            padding: 6px;
+            font-weight: bold;
+        }
+    """)
+    grade_table.setFont(QFont("Segoe UI", 10))
+    grade_table.horizontalHeader().setStretchLastSection(True)
+    grade_table.setAlternatingRowColors(True)
+    main_layout.addWidget(grade_table)
 
-    tk.Label(form_frame, text="Delete by Grade ID", font=label_font, bg="#f0f0f0").grid(row=4, column=0, sticky="e", padx=10, pady=5)
-    delete_entry = tk.Entry(form_frame, font=entry_font, width=30)
-    delete_entry.grid(row=4, column=1, pady=5)
+    delete_id_input = QLineEdit()
+    delete_id_input.setPlaceholderText("Grade ID to delete or update")
+    delete_id_input.setFont(QFont("Segoe UI", 11))
+    delete_id_input.setStyleSheet("""
+        QLineEdit {
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+        }
+        QLineEdit:focus {
+            border-color: #c0392b;
+        }
+    """)
+    main_layout.addWidget(delete_id_input)
+
+    # --- Populate student and course combos ---
+    def populate_dropdowns():
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, full_name FROM students ORDER BY full_name")
+            student_combo.clear()
+            for sid, sname in cursor.fetchall():
+                student_combo.addItem(sname, sid)
+
+            cursor.execute("SELECT id, course_name FROM courses ORDER BY course_name")
+            course_combo.clear()
+            for cid, cname in cursor.fetchall():
+                course_combo.addItem(cname, cid)
+
+            cursor.close()
+            conn.close()
+        except mysql.connector.Error as err:
+            QMessageBox.critical(window, "Database Error", str(err))
+
+    populate_dropdowns()
+
+    def clear_inputs():
+        student_combo.setCurrentIndex(0)
+        course_combo.setCurrentIndex(0)
+        grade_input.clear()
+        delete_id_input.clear()
+
+    def refresh_grade_table():
+        grade_table.setRowCount(0)
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT g.id, s.full_name, c.course_name, g.grade
+                FROM grades g
+                JOIN students s ON g.student_id = s.id
+                JOIN courses c ON g.course_id = c.id
+                ORDER BY s.full_name, c.course_name
+            """)
+            rows = cursor.fetchall()
+            grade_table.setRowCount(len(rows))
+            for i, (gid, student, course, grade) in enumerate(rows):
+                grade_table.setItem(i, 0, QTableWidgetItem(str(gid)))
+                grade_table.setItem(i, 1, QTableWidgetItem(student))
+                grade_table.setItem(i, 2, QTableWidgetItem(course))
+                grade_table.setItem(i, 3, QTableWidgetItem(grade))
+            cursor.close()
+            conn.close()
+        except mysql.connector.Error as err:
+            QMessageBox.critical(window, "Database Error", str(err))
+
+    def add_grade():
+        sid = student_combo.currentData()
+        cid = course_combo.currentData()
+        grade_val = grade_input.text().strip()
+
+        if not sid or not cid or not grade_val:
+            QMessageBox.warning(window, "Validation", "All fields are required.")
+            return
+
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("INSERT INTO grades (student_id, course_id, grade) VALUES (%s, %s, %s)",
+                           (sid, cid, grade_val))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            QMessageBox.information(window, "Success", "Grade added.")
+            clear_inputs()
+            refresh_grade_table()
+        except mysql.connector.Error as err:
+            QMessageBox.critical(window, "Database Error", str(err))
+
+    def delete_grade():
+        gid = delete_id_input.text().strip()
+        if not gid.isdigit():
+            QMessageBox.warning(window, "Validation", "Enter valid Grade ID.")
+            return
+
+        confirm = QMessageBox.question(window, "Confirm Delete",
+                                       f"Delete grade ID {gid}?",
+                                       QMessageBox.Yes | QMessageBox.No)
+        if confirm == QMessageBox.Yes:
+            try:
+                conn = mysql.connector.connect(**DB_CONFIG)
+                cursor = conn.cursor()
+                cursor.execute("DELETE FROM grades WHERE id = %s", (gid,))
+                if cursor.rowcount == 0:
+                    QMessageBox.information(window, "Info", "Grade not found.")
+                else:
+                    QMessageBox.information(window, "Success", "Grade deleted.")
+                    clear_inputs()
+                    refresh_grade_table()
+                conn.commit()
+                cursor.close()
+                conn.close()
+            except mysql.connector.Error as err:
+                QMessageBox.critical(window, "Database Error", str(err))
+
+    def update_grade():
+        gid = delete_id_input.text().strip()
+        if not gid.isdigit():
+            QMessageBox.warning(window, "Validation", "Enter valid Grade ID.")
+            return
+
+        sid = student_combo.currentData()
+        cid = course_combo.currentData()
+        grade_val = grade_input.text().strip()
+
+        if not sid or not cid or not grade_val:
+            QMessageBox.warning(window, "Validation", "All fields are required.")
+            return
+
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM grades WHERE id = %s", (gid,))
+            if not cursor.fetchone():
+                QMessageBox.warning(window, "Not Found", "Grade ID does not exist.")
+                return
+
+            cursor.execute("""
+                UPDATE grades
+                SET student_id = %s, course_id = %s, grade = %s
+                WHERE id = %s
+            """, (sid, cid, grade_val, gid))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            QMessageBox.information(window, "Success", "Grade updated.")
+            clear_inputs()
+            refresh_grade_table()
+        except mysql.connector.Error as err:
+            QMessageBox.critical(window, "Database Error", str(err))
 
     # --- Buttons ---
-    button_frame = tk.Frame(window, bg="#f0f0f0")
-    button_frame.pack(pady=10)
+    button_layout = QHBoxLayout()
+    button_layout.setSpacing(15)
 
-    tk.Button(button_frame, text="Assign Grade", font=button_font, width=15,
-              command=lambda: assign_grade(student_entry.get(), course_options.get(selected_course_name.get()), selected_grade.get())
-              ).grid(row=0, column=0, padx=10, pady=5)
+    def styled_btn(text, handler, color="#3498db"):
+        btn = QPushButton(text)
+        btn.clicked.connect(handler)
+        btn.setFixedHeight(40)
+        btn.setFont(QFont("Segoe UI", 11, QFont.Bold))
+        btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: {color};
+                color: white;
+                border-radius: 10px;
+            }}
+            QPushButton:hover {{
+                background-color: #2c80b4;
+            }}
+        """)
+        return btn
 
-    tk.Button(button_frame, text="Update Grade", font=button_font, width=15,
-              command=lambda: update_grade(grade_id_entry.get(), student_entry.get(), course_options.get(selected_course_name.get()), selected_grade.get())
-              ).grid(row=0, column=1, padx=10, pady=5)
+    button_layout.addWidget(styled_btn("Add Grade", add_grade, "#27ae60"))
+    button_layout.addWidget(styled_btn("Update Grade", update_grade, "#f39c12"))
+    button_layout.addWidget(styled_btn("Delete Grade", delete_grade, "#c0392b"))
+    button_layout.addWidget(styled_btn("Refresh Grade", refresh_grade_table, "#2980b9"))
+    button_layout.addWidget(styled_btn("Clear Grade", clear_inputs, "#7f8c8d"))
 
-    tk.Button(button_frame, text="Clear Fields", font=button_font, width=15,
-              command=lambda: [grade_id_entry.delete(0, tk.END),
-                               student_entry.delete(0, tk.END),
-                               delete_entry.delete(0, tk.END)]
-              ).grid(row=0, column=2, padx=10, pady=5)
+    main_layout.addLayout(button_layout)
 
-    tk.Button(button_frame, text="Delete Grade", font=button_font, width=15,
-              command=lambda: delete_grade(delete_entry.get())
-              ).grid(row=1, column=0, padx=10, pady=5)
+    # Back button
+    if main_window:
+        def go_back():
+            window.close()
+            main_window.show()
+        back_btn = styled_btn("⬅ Back to Dashboard", go_back, "#34495e")
+        main_layout.addWidget(back_btn)
 
-    tk.Button(button_frame, text="Refresh Grades", font=button_font, width=15,
-              command=lambda: view_grades(grade_listbox)
-              ).grid(row=1, column=1, padx=10, pady=5)
-
-    # --- Listbox ---
-    grade_listbox = tk.Listbox(window, width=90, height=10, font=entry_font)
-    grade_listbox.pack(pady=20)
-
-    # --- Back Button ---
-    def back_to_main():
-        window.destroy()
-        main_window.deiconify()
-
-    tk.Button(window, text="Back", font=button_font, bg="#d1d1d1", width=20, command=back_to_main).pack(pady=10)
-
-    # Load grades initially
-    view_grades(grade_listbox)
+    refresh_grade_table()
+    window.show()
+    return window

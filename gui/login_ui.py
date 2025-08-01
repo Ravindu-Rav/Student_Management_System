@@ -1,10 +1,18 @@
+# gui/login_ui.py
 import sys
 import os
+
+# Add root folder (one level up from gui) to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import ttkbootstrap as ttk
-from ttkbootstrap.constants import *
-from tkinter import messagebox, PhotoImage
+import sys
+import os
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QLabel, QLineEdit, QPushButton,
+    QVBoxLayout, QHBoxLayout, QMessageBox, QFrame
+)
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFont
 import mysql.connector
 from config import DB_CONFIG
 from gui.main_ui import open_main_window
@@ -13,11 +21,11 @@ logged_in_user = None
 
 def login():
     global logged_in_user
-    username = username_entry.get().strip()
-    password = password_entry.get().strip()
+    username = username_entry.text().strip()
+    password = password_entry.text().strip()
 
     if not username or not password:
-        messagebox.showwarning("Input Error", "Please enter both username and password.")
+        QMessageBox.warning(window, "Input Error", "Please enter both username and password.")
         return
 
     try:
@@ -29,84 +37,134 @@ def login():
 
         if result:
             logged_in_user = username
-            root.destroy()
+            QMessageBox.information(window, "Login Successful", f"Welcome {username}!")
+            window.close()
             open_main_window(logged_in_user)
         else:
-            messagebox.showerror("Login Failed", "Invalid username or password.")
+            QMessageBox.critical(window, "Login Failed", "Invalid username or password.")
     except mysql.connector.Error as err:
-        messagebox.showerror("Database Error", str(err))
+        QMessageBox.critical(window, "Database Error", str(err))
 
-# -------- UI Setup --------
-root = ttk.Window(themename="flatly")  # Light modern theme
-root.title("Admin Login")
-root.resizable(False, False)
 
-window_width = 800
-window_height = 500
-screen_width = root.winfo_screenwidth()
-screen_height = root.winfo_screenheight()
-center_x = int(screen_width / 2 - window_width / 2)
-center_y = int(screen_height / 2 - window_height / 2)
-root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+app = QApplication(sys.argv)
+window = QWidget()
+window.setWindowTitle("Admin Login")
+window.setFixedSize(600, 500)
 
-# Configure grid layout for 2 columns
-root.columnconfigure(0, weight=1)
-root.columnconfigure(1, weight=2)
-root.rowconfigure(0, weight=1)
+# Center window
+screen = app.primaryScreen().geometry()
+center_x = int(screen.width() / 2 - window.width() / 2)
+center_y = int(screen.height() / 2 - window.height() / 2)
+window.setGeometry(center_x, center_y, 600, 400)
 
-# Left Panel with soft lavender background (#E6E6FA) and icon + text
-left_frame = ttk.Frame(root, padding=30)
-left_frame.grid(row=0, column=0, sticky="nsew")
-left_frame.configure(style="LeftPanel.TFrame")
+# Main vertical layout
+main_layout = QVBoxLayout(window)
+main_layout.setContentsMargins(80, 60, 80, 60)
+main_layout.setSpacing(30)
 
-# Load and display image or emoji icon (replace with your image path)
-try:
-    icon_img = PhotoImage(file="assets/admin_icon.png")  # Replace with your image path
-    icon_label = ttk.Label(left_frame, image=icon_img, background="#E6E6FA")
-    icon_label.image = icon_img  # prevent GC
-    icon_label.pack(pady=(10, 10))
-except Exception:
-    icon_label = ttk.Label(left_frame, text="👩‍💻", font=("Segoe UI Emoji", 80), foreground="#2F4F4F", background="#E6E6FA")
-    icon_label.pack(pady=(10, 10))
+# Title
+title_label = QLabel("👋 Welcome Back!")
+title_label.setFont(QFont("Segoe UI", 28, QFont.Bold))
+title_label.setAlignment(Qt.AlignCenter)
+title_label.setStyleSheet("color: #FFFFFF;")
+main_layout.addWidget(title_label)
 
-title_label = ttk.Label(left_frame, text="Student\nManagement", font=("Helvetica", 24, "bold"), foreground="#2F4F4F", background="#E6E6FA", justify="center")
-title_label.pack(pady=(0, 5))
+# Subtitle
+subtitle_label = QLabel("Log in to your admin account")
+subtitle_label.setFont(QFont("Segoe UI", 14))
+subtitle_label.setAlignment(Qt.AlignCenter)
+subtitle_label.setStyleSheet("color: #FFFFFF;")
+main_layout.addWidget(subtitle_label)
 
-subtitle_label = ttk.Label(left_frame, text="Admin Portal", font=("Helvetica", 14), foreground="#2F4F4F", background="#E6E6FA")
-subtitle_label.pack()
+# Username input frame with emoji icon
+username_frame = QFrame()
+username_layout = QHBoxLayout(username_frame)
+username_layout.setContentsMargins(0, 0, 0, 0)
+username_layout.setSpacing(10)
 
-# Right Panel with white background and form card effect
-right_frame = ttk.Frame(root, padding=40, bootstyle="light")
-right_frame.grid(row=0, column=1, sticky="nsew")
+username_icon = QLabel("👤")
+username_icon.setFont(QFont("Segoe UI Emoji", 18))
+username_icon.setFixedWidth(30)
+username_icon.setAlignment(Qt.AlignCenter)
+username_layout.addWidget(username_icon)
 
-form_frame = ttk.Frame(right_frame, padding=20, bootstyle="white")
-form_frame.pack(expand=True, fill="both", padx=20, pady=20)
+username_entry = QLineEdit()
+username_entry.setPlaceholderText("Username")
+username_entry.setFont(QFont("Segoe UI", 12))
+username_entry.setStyleSheet("""
+    QLineEdit {
+        border: 2px solid #1abc9c;
+        border-radius: 12px;
+        padding: 10px 12px;
+        background-color: #eafaf7;
+        color: #16a085;
+        selection-background-color: #1abc9c;
+    }
+    QLineEdit:focus {
+        border-color: #16a085;
+        background-color: #d0f1eb;
+    }
+""")
+username_layout.addWidget(username_entry)
 
-ttk.Label(form_frame, text="Admin Login", font=("Helvetica", 22, "bold"), foreground="#2F4F4F").pack(pady=(0, 30))
+main_layout.addWidget(username_frame)
 
-ttk.Label(form_frame, text="Username:", font=("Helvetica", 12), foreground="#2F4F4F").pack(anchor="w")
-username_entry = ttk.Entry(form_frame, width=35, font=("Helvetica", 12))
-username_entry.pack(pady=(0, 15))
-username_entry.focus()
+# Password input frame with emoji icon
+password_frame = QFrame()
+password_layout = QHBoxLayout(password_frame)
+password_layout.setContentsMargins(0, 0, 0, 0)
+password_layout.setSpacing(10)
 
-ttk.Label(form_frame, text="Password:", font=("Helvetica", 12), foreground="#2F4F4F").pack(anchor="w")
-password_entry = ttk.Entry(form_frame, show="*", width=35, font=("Helvetica", 12))
-password_entry.pack(pady=(0, 25))
+password_icon = QLabel("🔒")
+password_icon.setFont(QFont("Segoe UI Emoji", 18))
+password_icon.setFixedWidth(30)
+password_icon.setAlignment(Qt.AlignCenter)
+password_layout.addWidget(password_icon)
 
-login_btn = ttk.Button(form_frame, text="Login", bootstyle="warning", width=30, command=login)  # warning = warm coral
-login_btn.pack()
+password_entry = QLineEdit()
+password_entry.setEchoMode(QLineEdit.Password)
+password_entry.setPlaceholderText("Password")
+password_entry.setFont(QFont("Segoe UI", 12))
+password_entry.setStyleSheet("""
+    QLineEdit {
+        border: 2px solid #1abc9c;
+        border-radius: 12px;
+        padding: 10px 12px;
+        background-color: #eafaf7;
+        color: #16a085;
+        selection-background-color: #1abc9c;
+    }
+    QLineEdit:focus {
+        border-color: #16a085;
+        background-color: #d0f1eb;
+    }
+""")
+password_layout.addWidget(password_entry)
 
-def on_enter(e):
-    login_btn.configure(bootstyle="warning-inverse")
+main_layout.addWidget(password_frame)
 
-def on_leave(e):
-    login_btn.configure(bootstyle="warning")
+# Login button
+login_button = QPushButton("Login")
+login_button.setFixedHeight(50)
+login_button.setFont(QFont("Segoe UI", 14, QFont.Bold))
+login_button.setCursor(Qt.PointingHandCursor)
+login_button.clicked.connect(login)
+login_button.setStyleSheet("""
+    QPushButton {
+        background-color: #e67e22;
+        color: white;
+        border-radius: 14px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    QPushButton:hover {
+        background-color: #d35400;
+    }
+    QPushButton:pressed {
+        background-color: #a84300;
+    }
+""")
+main_layout.addWidget(login_button)
 
-login_btn.bind("<Enter>", on_enter)
-login_btn.bind("<Leave>", on_leave)
-
-# Style config for left panel bg color soft lavender
-style = ttk.Style()
-style.configure("LeftPanel.TFrame", background="#E6E6FA")
-
-root.mainloop()
+window.show()
+sys.exit(app.exec())
