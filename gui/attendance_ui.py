@@ -1,13 +1,26 @@
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-# gui/attendance_ui.py
-
 import tkinter as tk
 from tkinter import messagebox, font
+from datetime import date
 import mysql.connector
+
 from config import DB_CONFIG
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Fetch available courses from DB
+def fetch_courses():
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT id, course_name FROM courses")
+        results = cursor.fetchall()
+        conn.close()
+        return results
+    except mysql.connector.Error as err:
+        messagebox.showerror("Database Error", str(err))
+        return []
 
 def mark_attendance(student_id, course_id, date, status):
     if not student_id or not course_id or not date or not status:
@@ -78,27 +91,45 @@ def open_attendance_window(username, main_window):
     label_font = font.Font(family="Helvetica", size=11)
     entry_font = font.Font(family="Helvetica", size=11)
 
+    today_date = str(date.today())
+
     tk.Label(window, text=f"Welcome: {username}", fg="blue", font=header_font).grid(row=0, column=0, columnspan=2, pady=10)
 
     tk.Label(window, text="Student ID", font=label_font).grid(row=1, column=0, sticky="e", padx=10, pady=5)
     student_entry = tk.Entry(window, width=30, font=entry_font)
     student_entry.grid(row=1, column=1, sticky="w", pady=5)
 
-    tk.Label(window, text="Course ID", font=label_font).grid(row=2, column=0, sticky="e", padx=10, pady=5)
-    course_entry = tk.Entry(window, width=30, font=entry_font)
-    course_entry.grid(row=2, column=1, sticky="w", pady=5)
+    # Course Dropdown
+    tk.Label(window, text="Select Course", font=label_font).grid(row=2, column=0, sticky="e", padx=10, pady=5)
+    courses = fetch_courses()
+    course_options = {name: cid for cid, name in courses}
+    selected_course_name = tk.StringVar(value=list(course_options.keys())[0] if course_options else "")
+    course_frame = tk.Frame(window, highlightthickness=1, highlightbackground="gray")
+    course_frame.grid(row=2, column=1, sticky="w", pady=5)
+    course_dropdown = tk.OptionMenu(course_frame, selected_course_name, *course_options.keys())
+    course_dropdown.config(width=26, font=entry_font, anchor="w", relief="flat")
+    course_dropdown.pack(fill="x")
 
-    tk.Label(window, text="Date (YYYY-MM-DD)", font=label_font).grid(row=3, column=0, sticky="e", padx=10, pady=5)
-    date_entry = tk.Entry(window, width=30, font=entry_font)
-    date_entry.grid(row=3, column=1, sticky="w", pady=5)
+    # Date display
+    tk.Label(window, text="Date (Today)", font=label_font).grid(row=3, column=0, sticky="e", padx=10, pady=5)
+    date_label = tk.Label(window, text=today_date, font=entry_font, anchor="w", width=30)
+    date_label.grid(row=3, column=1, sticky="w", pady=5)
 
-    tk.Label(window, text="Status (Present/Absent)", font=label_font).grid(row=4, column=0, sticky="e", padx=10, pady=5)
-    status_entry = tk.Entry(window, width=30, font=entry_font)
-    status_entry.grid(row=4, column=1, sticky="w", pady=5)
+    # Status Dropdown
+    tk.Label(window, text="Select Status", font=label_font).grid(row=4, column=0, sticky="e", padx=10, pady=5)
+    status_var = tk.StringVar(value="Present")
+    status_frame = tk.Frame(window, highlightthickness=1, highlightbackground="gray")
+    status_frame.grid(row=4, column=1, sticky="w", pady=5)
+    status_dropdown = tk.OptionMenu(status_frame, status_var, "Present", "Absent")
+    status_dropdown.config(width=26, font=entry_font, anchor="w", relief="flat")
+    status_dropdown.pack(fill="x")
 
     tk.Button(window, text="Mark Attendance", font=label_font,
               command=lambda: mark_attendance(
-                  student_entry.get(), course_entry.get(), date_entry.get(), status_entry.get()
+                  student_entry.get(),
+                  course_options.get(selected_course_name.get()),
+                  today_date,
+                  status_var.get()
               )).grid(row=5, column=1, pady=15, sticky="w")
 
     attendance_listbox = tk.Listbox(window, width=120, height=12, font=entry_font)
@@ -112,7 +143,7 @@ def open_attendance_window(username, main_window):
     delete_entry.grid(row=8, column=1, sticky="w", pady=5)
 
     tk.Button(window, text="Delete Attendance", font=label_font,
-              command=lambda: delete_attendance(delete_entry.get())).grid(row=9, column=1, pady=15, sticky="w")
+              command=lambda: delete_attendance(delete_entry.get())).grid(row=9, column=1, pady=10, sticky="w")
 
     def back_to_main():
         window.destroy()
