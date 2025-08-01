@@ -3,7 +3,6 @@ import os
 import tkinter as tk
 from tkinter import messagebox, font
 import mysql.connector
-import re
 from config import DB_CONFIG
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -22,6 +21,10 @@ def add_admin(username, password):
         messagebox.showinfo("Success", "Admin added successfully.")
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
+
+def clear_entries(entries):
+    for entry in entries:
+        entry.delete(0, tk.END)
 
 def view_admins(listbox):
     listbox.delete(0, tk.END)
@@ -79,25 +82,32 @@ def open_admin_window(username, main_window):
     password_entry = tk.Entry(window, width=35, font=entry_font, show="*")
     password_entry.grid(row=2, column=1, sticky="w", pady=5)
 
+    # Add Admin Button
     tk.Button(window, text="Add Admin", font=label_font,
               command=lambda: add_admin(username_entry.get(), password_entry.get())
               ).grid(row=3, column=1, sticky="w", pady=10)
 
+    # Clear Fields Button under Add Admin
+    entries = [username_entry, password_entry]
+    tk.Button(window, text="Clear Fields", font=label_font,
+              command=lambda: clear_entries(entries)
+              ).grid(row=4, column=1, sticky="w", pady=5)
+
     # === Admin Listbox ===
-    tk.Label(window, text="Admin List", font=label_font).grid(row=4, column=0, columnspan=2, pady=10)
+    tk.Label(window, text="Admin List", font=label_font).grid(row=5, column=0, columnspan=2, pady=10)
     admin_listbox = tk.Listbox(window, width=70, height=10, font=entry_font)
-    admin_listbox.grid(row=5, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
+    admin_listbox.grid(row=6, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
 
     tk.Button(window, text="Refresh Admin List", font=label_font,
-              command=lambda: view_admins(admin_listbox)).grid(row=6, column=0, columnspan=2, pady=5)
+              command=lambda: view_admins(admin_listbox)).grid(row=7, column=0, columnspan=2, pady=5)
 
     # === Delete Admin ===
-    tk.Label(window, text="Delete Admin ID", font=label_font).grid(row=7, column=0, sticky="e", padx=10, pady=5)
+    tk.Label(window, text="Delete Admin ID", font=label_font).grid(row=8, column=0, sticky="e", padx=10, pady=5)
     delete_entry = tk.Entry(window, width=20, font=entry_font)
-    delete_entry.grid(row=7, column=1, sticky="w", pady=5)
+    delete_entry.grid(row=8, column=1, sticky="w", pady=5)
 
     tk.Button(window, text="Delete Admin", font=label_font,
-              command=lambda: delete_admin(delete_entry.get())).grid(row=8, column=1, sticky="w", pady=5)
+              command=lambda: delete_admin(delete_entry.get())).grid(row=9, column=1, sticky="w", pady=5)
 
     # === Back Button ===
     def back_to_main():
@@ -105,10 +115,10 @@ def open_admin_window(username, main_window):
         main_window.deiconify()
 
     back_btn = tk.Button(window, text="Back to Main", font=label_font, command=back_to_main)
-    back_btn.grid(row=9, column=1, sticky="w", pady=15)
+    back_btn.grid(row=10, column=1, sticky="w", pady=15)
 
     window.protocol("WM_DELETE_WINDOW", back_to_main)
-    window.grid_rowconfigure(5, weight=1)
+    window.grid_rowconfigure(6, weight=1)
     window.grid_columnconfigure(1, weight=1)
 
     view_admins(admin_listbox)

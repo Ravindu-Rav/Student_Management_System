@@ -88,7 +88,6 @@ def center_window(win, width, height):
     x = (screen_width - width) // 2
     y = (screen_height - height) // 2
     win.geometry(f"{width}x{height}+{x}+{y}")
-
 def open_course_window(username, main_window):
     window = tk.Toplevel()
     window.title("Manage Courses")
@@ -116,43 +115,45 @@ def open_course_window(username, main_window):
     desc_entry = tk.Entry(window, width=35, font=entry_font)
     desc_entry.grid(row=3, column=1, sticky="w", pady=5)
 
+    entries = [id_entry, name_entry, desc_entry]  # <== For clearing fields
+
     # Buttons
     tk.Button(window, text="Add Course", font=label_font,
               command=lambda: add_course(name_entry.get(), desc_entry.get())).grid(row=4, column=1, sticky="w", pady=10)
 
     tk.Button(window, text="Update Course", font=label_font,
               command=lambda: update_course(id_entry.get(), name_entry.get(), desc_entry.get())).grid(row=5, column=1, sticky="w", pady=5)
-    
-    tk.Button(window, text="Clear Fields", font=label_font,
-              command=lambda: clear_entries(entries)).grid(row=8, column=1, sticky="w", pady=5)
 
+    # Moved Clear Fields button here (below update)
+    tk.Button(window, text="Clear Fields", font=label_font,
+              command=lambda: clear_entries(entries)).grid(row=6, column=1, sticky="w", pady=5)
 
     # Listbox
-    tk.Label(window, text="Course List", font=label_font).grid(row=6, column=0, columnspan=2, pady=(10, 5))
+    tk.Label(window, text="Course List", font=label_font).grid(row=7, column=0, columnspan=2, pady=(10, 5))
     course_listbox = tk.Listbox(window, width=90, height=10, font=entry_font)
-    course_listbox.grid(row=7, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
+    course_listbox.grid(row=8, column=0, columnspan=2, padx=10, pady=5, sticky="nsew")
 
     tk.Button(window, text="Refresh Course List", font=label_font,
-              command=lambda: view_courses(course_listbox)).grid(row=8, column=0, columnspan=2, pady=6)
+              command=lambda: view_courses(course_listbox)).grid(row=9, column=0, columnspan=2, pady=6)
 
     # Delete
-    tk.Label(window, text="Delete by ID", font=label_font).grid(row=9, column=0, sticky="e", padx=10, pady=5)
+    tk.Label(window, text="Delete by ID", font=label_font).grid(row=10, column=0, sticky="e", padx=10, pady=5)
     delete_entry = tk.Entry(window, font=entry_font)
-    delete_entry.grid(row=9, column=1, sticky="w", pady=5)
+    delete_entry.grid(row=10, column=1, sticky="w", pady=5)
 
     tk.Button(window, text="Delete Course", font=label_font,
-              command=lambda: delete_course(delete_entry.get())).grid(row=10, column=1, sticky="w", pady=10)
+              command=lambda: delete_course(delete_entry.get())).grid(row=11, column=1, sticky="w", pady=10)
 
     # Back Button
     def back_to_main():
         window.destroy()
         main_window.deiconify()
 
-    tk.Button(window, text="Back to Main", font=label_font, command=back_to_main).grid(row=11, column=1, sticky="w", pady=15)
+    tk.Button(window, text="Back to Main", font=label_font, command=back_to_main).grid(row=12, column=1, sticky="w", pady=15)
 
     window.protocol("WM_DELETE_WINDOW", back_to_main)
 
-    window.grid_rowconfigure(7, weight=1)
+    window.grid_rowconfigure(8, weight=1)
     window.grid_columnconfigure(1, weight=1)
 
     view_courses(course_listbox)
