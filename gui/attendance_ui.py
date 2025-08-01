@@ -10,6 +10,9 @@ import mysql.connector
 from config import DB_CONFIG
 
 def mark_attendance(student_id, course_id, date, status):
+    if not student_id or not course_id or not date or not status:
+        messagebox.showwarning("Input Error", "All fields are required.")
+        return
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
@@ -24,6 +27,9 @@ def mark_attendance(student_id, course_id, date, status):
         messagebox.showerror("Error", str(err))
 
 def delete_attendance(attendance_id):
+    if not attendance_id:
+        messagebox.showwarning("Input Error", "Attendance ID is required.")
+        return
     try:
         conn = mysql.connector.connect(**DB_CONFIG)
         cursor = conn.cursor()
@@ -61,26 +67,19 @@ def center_window(win, width, height):
     y = (screen_height - height) // 2
     win.geometry(f"{width}x{height}+{x}+{y}")
 
-def open_attendance_window(username):
+def open_attendance_window(username, main_window):
     window = tk.Toplevel()
     window.title("Manage Attendance")
-
-    # Make window resizable
+    window.geometry("1000x700")
     window.resizable(True, True)
+    center_window(window, 1000, 700)
 
-    # Set size and center window
-    width, height = 800, 500
-    center_window(window, width, height)
-
-    # Define fonts
     header_font = font.Font(family="Helvetica", size=14, weight="bold")
     label_font = font.Font(family="Helvetica", size=11)
     entry_font = font.Font(family="Helvetica", size=11)
 
-    # Welcome Label
     tk.Label(window, text=f"Welcome: {username}", fg="blue", font=header_font).grid(row=0, column=0, columnspan=2, pady=10)
 
-    # Form Labels and Entries
     tk.Label(window, text="Student ID", font=label_font).grid(row=1, column=0, sticky="e", padx=10, pady=5)
     student_entry = tk.Entry(window, width=30, font=entry_font)
     student_entry.grid(row=1, column=1, sticky="w", pady=5)
@@ -102,14 +101,12 @@ def open_attendance_window(username):
                   student_entry.get(), course_entry.get(), date_entry.get(), status_entry.get()
               )).grid(row=5, column=1, pady=15, sticky="w")
 
-    # Attendance Listbox
-    attendance_listbox = tk.Listbox(window, width=100, height=12, font=entry_font)
+    attendance_listbox = tk.Listbox(window, width=120, height=12, font=entry_font)
     attendance_listbox.grid(row=6, column=0, columnspan=2, padx=10, pady=10, sticky="nsew")
 
     tk.Button(window, text="Refresh Attendance", font=label_font,
               command=lambda: view_attendance(attendance_listbox)).grid(row=7, column=0, columnspan=2, pady=5)
 
-    # Delete section
     tk.Label(window, text="Delete by Attendance ID", font=label_font).grid(row=8, column=0, sticky="e", padx=10, pady=5)
     delete_entry = tk.Entry(window, font=entry_font)
     delete_entry.grid(row=8, column=1, sticky="w", pady=5)
@@ -117,7 +114,13 @@ def open_attendance_window(username):
     tk.Button(window, text="Delete Attendance", font=label_font,
               command=lambda: delete_attendance(delete_entry.get())).grid(row=9, column=1, pady=15, sticky="w")
 
-    # Configure grid to allow listbox to expand
+    def back_to_main():
+        window.destroy()
+        main_window.deiconify()
+
+    tk.Button(window, text="Back to Main", font=label_font,
+              command=back_to_main).grid(row=10, column=1, pady=10, sticky="w")
+
     window.grid_rowconfigure(6, weight=1)
     window.grid_columnconfigure(1, weight=1)
 

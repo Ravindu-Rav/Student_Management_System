@@ -13,19 +13,19 @@ def open_student_ui(username, main_window):
     main_window.withdraw()
 
 def open_course_ui(username, main_window):
-    open_course_window(username)
+    open_course_window(username,main_window)
     main_window.withdraw()
 
 def open_grade_ui(username, main_window):
-    open_grade_window(username)
+    open_grade_window(username,main_window)
     main_window.withdraw()
 
 def open_attendance_ui(username, main_window):
-    open_attendance_window(username)
+    open_attendance_window(username,main_window)
     main_window.withdraw()
 
 def open_admin_ui(username, main_window):
-    open_admin_window(username)
+    open_admin_window(username,main_window)
     main_window.withdraw()
 
 def open_main_window(username):
