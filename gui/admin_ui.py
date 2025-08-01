@@ -61,7 +61,7 @@ def center_window(win, width, height):
 def open_admin_window(username, main_window):
     window = tk.Toplevel()
     window.title("Admin Management")
-    width, height = 900, 600
+    width, height = 1000, 700
     center_window(window, width, height)
 
     header_font = font.Font(family="Helvetica", size=14, weight="bold")
