@@ -21,6 +21,11 @@ def add_course(name, description):
     except mysql.connector.Error as err:
         messagebox.showerror("Error", str(err))
 
+
+def clear_entries(entries):
+    for entry in entries:
+        entry.delete(0, tk.END)        
+
 def update_course(course_id, name, description):
     if not course_id.strip().isdigit():
         messagebox.showwarning("Validation Error", "Enter a valid numeric Course ID.")
@@ -117,6 +122,10 @@ def open_course_window(username, main_window):
 
     tk.Button(window, text="Update Course", font=label_font,
               command=lambda: update_course(id_entry.get(), name_entry.get(), desc_entry.get())).grid(row=5, column=1, sticky="w", pady=5)
+    
+    tk.Button(window, text="Clear Fields", font=label_font,
+              command=lambda: clear_entries(entries)).grid(row=8, column=1, sticky="w", pady=5)
+
 
     # Listbox
     tk.Label(window, text="Course List", font=label_font).grid(row=6, column=0, columnspan=2, pady=(10, 5))

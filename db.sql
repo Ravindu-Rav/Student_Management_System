@@ -21,7 +21,7 @@ CREATE TABLE students (
 -- Courses table
 CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    course_name VARCHAR(100) NOT NULL,
+    course_name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT
 );
 
