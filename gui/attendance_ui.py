@@ -8,6 +8,7 @@ from PySide6.QtCore import Qt
 import mysql.connector
 from config import DB_CONFIG
 
+
 def open_attendance_window(admin_id, username, main_window=None):
     window = QWidget()
     window.setWindowTitle("Attendance Management")
@@ -44,7 +45,7 @@ def open_attendance_window(admin_id, username, main_window=None):
             conn.close()
             student_dropdown.clear()
             for sid, name in students:
-                student_dropdown.addItem(f"{name}")
+                student_dropdown.addItem(name, userData=sid)  # Important fix
         except:
             QMessageBox.critical(window, "Database Error", "Unable to load students.")
 
@@ -155,18 +156,21 @@ def open_attendance_window(admin_id, username, main_window=None):
             QMessageBox.critical(window, "Database Error", str(err))
 
     def add_attendance():
-        student_id = student_dropdown.currentData()
+        sid = student_dropdown.currentData()
         date = date_entry.text().strip()
         status = status_dropdown.currentText()
 
-        if not student_id or not date or not status:
-            QMessageBox.warning(window, "Validation", "All fields are required.")
+        if not sid or not date:
+            QMessageBox.warning(window, "Validation", "Please select a student and enter a valid date.")
             return
+
         try:
             conn = mysql.connector.connect(**DB_CONFIG)
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO attendance (student_id, date, status, admin_id) VALUES (%s, %s, %s, %s)",
-                           (student_id, date, status, admin_id))
+            cursor.execute(
+                "INSERT INTO attendance (student_id, date, status, admin_id) VALUES (%s, %s, %s, %s)",
+                (sid, date, status, admin_id)
+            )
             conn.commit()
             cursor.close()
             conn.close()
@@ -207,10 +211,10 @@ def open_attendance_window(admin_id, username, main_window=None):
         updates = []
         params = []
 
-        student_id = student_dropdown.currentData()
-        if student_id:
+        sid = student_dropdown.currentData()
+        if sid:
             updates.append("student_id = %s")
-            params.append(student_id)
+            params.append(sid)
 
         date = date_entry.text().strip()
         if date:
