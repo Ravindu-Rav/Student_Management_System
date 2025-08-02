@@ -15,7 +15,9 @@ CREATE TABLE students (
     full_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
-    enrollment_date DATE
+    enrollment_date DATE,
+    admin_id INT
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
 -- Courses table
@@ -23,6 +25,8 @@ CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL UNIQUE,
     description TEXT
+    admin_id INT
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
 
@@ -34,6 +38,8 @@ CREATE TABLE grades (
     grade VARCHAR(2),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    admin_id INT
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
 
@@ -46,6 +52,8 @@ CREATE TABLE attendance (
     status ENUM('Present', 'Absent') NOT NULL,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
+    admin_id INT
+    FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
 --admin user manually inserted

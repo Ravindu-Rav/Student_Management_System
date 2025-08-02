@@ -17,7 +17,7 @@ def is_valid_date(date_str):
     except ValueError:
         return False
 
-def open_student_window(username, main_window=None):
+def open_student_window(admin_id,username, main_window=None):
     window = QWidget()
     window.setWindowTitle("Manage Students")
     window.setFixedSize(1000, 700)
@@ -143,8 +143,8 @@ def open_student_window(username, main_window=None):
             conn = mysql.connector.connect(**DB_CONFIG)
             cursor = conn.cursor()
             cursor.execute(
-                "INSERT INTO students (full_name, email, phone, enrollment_date) VALUES (%s, %s, %s, %s)",
-                (name_entry.text(), email_entry.text(), phone_entry.text(), date_entry.text())
+                "INSERT INTO students (full_name, email, phone, enrollment_date, admin_id) VALUES (%s, %s, %s, %s, %s)",
+                (name_entry.text(), email_entry.text(), phone_entry.text(), date_entry.text(),admin_id)
             )
             conn.commit()
             cursor.close()

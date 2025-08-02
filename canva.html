@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System - Project Infographic</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #03254C;
+            color: #FFFFFF;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+
+        .kpi-card {
+            background-color: #0A3A6E;
+            border-left: 5px solid #00A6FB;
+        }
+
+        .flow-arrow {
+            color: #FBB03B;
+        }
+
+        .flow-box {
+            border: 2px solid #00A6FB;
+            background-color: #0A3A6E;
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <header class="text-center my-8 md:my-16">
+            <h1 class="text-4xl md:text-6xl font-black text-white uppercase tracking-wider">Student Management System
+            </h1>
+            <p class="mt-4 text-lg md:text-xl text-gray-300 max-w-3xl mx-auto">An infographic report on the Python-based
+                desktop application designed for efficient academic administration, featuring full CRUD functionality
+                and a robust MySQL backend.</p>
+        </header>
+
+        <section id="kpis" class="my-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                <div class="kpi-card rounded-lg p-6 shadow-lg">
+                    <p class="text-6xl font-extrabold text-[#FBB03B]">5</p>
+                    <p class="mt-2 text-xl font-semibold">Core Management Modules</p>
+                    <p class="text-gray-400 mt-1">Covering all essential administrative areas.</p>
+                </div>
+                <div class="kpi-card rounded-lg p-6 shadow-lg">
+                    <p class="text-6xl font-extrabold text-[#FBB03B]">100%</p>
+                    <p class="mt-2 text-xl font-semibold">CRUD Coverage</p>
+                    <p class="text-gray-400 mt-1">Full Create, Read, Update & Delete capabilities.</p>
+                </div>
+                <div class="kpi-card rounded-lg p-6 shadow-lg">
+                    <p class="text-6xl font-extrabold text-[#FBB03B]">5</p>
+                    <p class="mt-2 text-xl font-semibold">Relational Database Tables</p>
+                    <p class="text-gray-400 mt-1">Ensuring data integrity and scalability.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="architecture" class="my-16">
+            <h2 class="text-3xl font-bold text-center mb-2">System Architecture</h2>
+            <p class="text-center text-gray-300 mb-8 max-w-2xl mx-auto">A robust two-tier architecture ensures a direct
+                and efficient connection between the user interface and the data layer.</p>
+            <div
+                class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 text-center">
+                <div class="flow-box p-6 rounded-lg shadow-xl w-64">
+                    <p class="text-2xl mb-2">🖥️</p>
+                    <h3 class="text-xl font-bold">Python Client (PySide6)</h3>
+                    <p class="text-gray-400">Handles all UI and application logic.</p>
+                </div>
+                <div class="text-4xl font-bold flow-arrow transform md:-rotate-90">↓</div>
+                <div class="flow-box p-6 rounded-lg shadow-xl w-64">
+                    <p class="text-2xl mb-2">🗃️</p>
+                    <h3 class="text-xl font-bold">MySQL Database</h3>
+                    <p class="text-gray-400">Manages data storage and retrieval.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+            <section id="students" class="bg-white/10 rounded-lg shadow-2xl p-6">
+                <h2 class="text-2xl font-bold mb-1">Student Enrollment</h2>
+                <p class="text-gray-300 mb-4">The system tracks student records, including their enrollment dates. The
+                    chart below shows the distribution of student enrollments by year, highlighting peak admission
+                    periods.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="studentEnrollmentChart"></canvas>
+                </div>
+            </section>
+
+            <section id="courses" class="bg-white/10 rounded-lg shadow-2xl p-6">
+                <h2 class="text-2xl font-bold mb-1">Course Popularity</h2>
+                <p class="text-gray-300 mb-4">Managing courses is a key feature. This visualization illustrates the
+                    number of students enrolled in each course, indicating which subjects are most in demand.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="coursePopularityChart"></canvas>
+                </div>
+            </section>
+
+            <section id="grades" class="bg-white/10 rounded-lg shadow-2xl p-6">
+                <h2 class="text-2xl font-bold mb-1">Academic Performance</h2>
+                <p class="text-gray-300 mb-4">The grade management module allows for efficient tracking of student
+                    performance. This chart displays the overall distribution of grades across all courses.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="gradeDistributionChart"></canvas>
+                </div>
+            </section>
+
+            <section id="attendance" class="bg-white/10 rounded-lg shadow-2xl p-6">
+                <h2 class="text-2xl font-bold mb-1">Attendance Trends</h2>
+                <p class="text-gray-300 mb-4">Monitoring attendance is crucial for student success. The line graph shows
+                    daily attendance records, providing insights into student engagement over time.</p>
+                <div class="chart-container h-80 md:h-96">
+                    <canvas id="attendanceTrendChart"></canvas>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="text-center mt-16 pb-8">
+            <p class="text-gray-400">Infographic generated for the PUSL2021 Computing Group Project.</p>
+            <p class="text-gray-500 text-sm">NSBM Green University in partnership with Plymouth University.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const FONT_COLOR = '#FFFFFF';
+        const GRID_COLOR = 'rgba(255, 255, 255, 0.2)';
+
+        const PALETTE = {
+            blue: '#00A6FB',
+            pink: '#DC0073',
+            yellow: '#FBB03B',
+            darkBlue: '#03254C',
+            extra: ['#0A99C9', '#F95D9B', '#FDD835']
+        };
+
+        function wrapLabel(label, maxWidth) {
+            const words = label.split(' ');
+            const lines = [];
+            let currentLine = '';
+            for (const word of words) {
+                if ((currentLine + word).length < maxWidth) {
+                    currentLine += (currentLine ? ' ' : '') + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            return lines;
+        }
+
+        const tooltipTitleCallback = (tooltipItems) => {
+            const item = tooltipItems[0];
+            let label = item.chart.data.labels[item.dataIndex];
+            if (Array.isArray(label)) {
+                return label.join(' ');
+            }
+            return label;
+        };
+
+        const SHARED_CHART_OPTIONS = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: FONT_COLOR,
+                        font: { size: 14 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        title: tooltipTitleCallback
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    ticks: { color: FONT_COLOR, font: { size: 12 } },
+                    grid: { color: GRID_COLOR }
+                },
+                x: {
+                    ticks: { color: FONT_COLOR, font: { size: 12 } },
+                    grid: { color: 'transparent' }
+                }
+            }
+        };
+
+        new Chart(document.getElementById('studentEnrollmentChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['2022', '2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Students',
+                    data: [45, 62, 78, 55],
+                    backgroundColor: [PALETTE.blue, PALETTE.pink, PALETTE.yellow, PALETTE.extra[0]],
+                    borderColor: PALETTE.darkBlue,
+                    borderWidth: 4
+                }]
+            },
+            options: { ...SHARED_CHART_OPTIONS, scales: { y: { display: false }, x: { display: false } } }
+        });
+
+        const courseLabels = ['Mathematics', 'Science', 'Sinhala', 'English', 'History', 'Information & Communication Tech', 'Buddhism / Religion'];
+        const wrappedCourseLabels = courseLabels.map(label => label.length > 16 ? wrapLabel(label, 16) : label);
+
+        new Chart(document.getElementById('coursePopularityChart'), {
+            type: 'bar',
+            data: {
+                labels: wrappedCourseLabels,
+                datasets: [{
+                    label: 'Number of Students',
+                    data: [88, 75, 60, 95, 50, 82, 45],
+                    backgroundColor: PALETTE.pink,
+                    borderColor: PALETTE.blue,
+                    borderWidth: 2,
+                    borderRadius: 5
+                }]
+            },
+            options: { ...SHARED_CHART_OPTIONS, indexAxis: 'y' }
+        });
+
+        new Chart(document.getElementById('gradeDistributionChart'), {
+            type: 'bar',
+            data: {
+                labels: ['A', 'B+', 'B', 'C+', 'C', 'D'],
+                datasets: [{
+                    label: 'Number of Grades',
+                    data: [120, 95, 150, 80, 60, 30],
+                    backgroundColor: [PALETTE.blue, PALETTE.extra[0], PALETTE.yellow, PALETTE.extra[1], PALETTE.pink, '#c0392b'],
+                    borderWidth: 0
+                }]
+            },
+            options: { ...SHARED_CHART_OPTIONS, plugins: { legend: { display: false } } }
+        });
+
+        new Chart(document.getElementById('attendanceTrendChart'), {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                datasets: [{
+                    label: 'Present Students',
+                    data: [210, 225, 220, 235, 215, 150],
+                    borderColor: PALETTE.yellow,
+                    backgroundColor: 'rgba(251, 176, 59, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: SHARED_CHART_OPTIONS
+        });
+    </script>
+</body>
+
+</html>

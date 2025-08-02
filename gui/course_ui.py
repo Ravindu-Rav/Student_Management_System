@@ -8,7 +8,7 @@ from PySide6.QtCore import Qt
 
 from config import DB_CONFIG
 
-def open_course_window(username, main_window=None):
+def open_course_window(admin_id,username, main_window=None):
     window = QWidget()
     window.setWindowTitle("Manage Courses")
     window.setFixedSize(1000, 700)
@@ -121,7 +121,7 @@ def open_course_window(username, main_window=None):
         try:
             conn = mysql.connector.connect(**DB_CONFIG)
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO courses (course_name, description) VALUES (%s, %s)", (name, desc))
+            cursor.execute("INSERT INTO courses (course_name, description, admin_id) VALUES (%s, %s, %s)", (name, desc, admin_id))
             conn.commit()
             cursor.close()
             conn.close()

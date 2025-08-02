@@ -12,7 +12,7 @@ from admin_ui import open_admin_window
 # Add globals for subwindows so they don’t get GC'ed
 sub_windows = {}
 
-def open_main_window(username):
+def open_main_window(username, admin_id):
     global main_window_instance
     global sub_windows
 
@@ -71,23 +71,23 @@ def open_main_window(username):
 
     def open_student():
         # Create and store subwindow reference to keep alive
-        sub_windows['student'] = open_student_window(username,window)
+        sub_windows['student'] = open_student_window(admin_id ,username,window)
         window.hide()  # hide main while sub window is open
 
     def open_course():
-        sub_windows['course'] = open_course_window(username, window)
+        sub_windows['course'] = open_course_window(admin_id ,username, window)
         window.hide()
 
     def open_grade():
-        sub_windows['grade'] = open_grade_window(username, window)
+        sub_windows['grade'] = open_grade_window(admin_id ,username, window)
         window.hide()
 
     def open_attendance():
-        sub_windows['attendance'] = open_attendance_window(username, window)
+        sub_windows['attendance'] = open_attendance_window(admin_id ,username, window)
         window.hide()
 
     def open_admin():
-        sub_windows['admin'] = open_admin_window(username, window)
+        sub_windows['admin'] = open_admin_window(admin_id ,username, window)
         window.hide()
 
     button_frame = QFrame()

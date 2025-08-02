@@ -9,7 +9,7 @@ import mysql.connector
 from config import DB_CONFIG
 
 
-def open_grade_window(username, main_window=None):
+def open_grade_window(admin_id,username, main_window=None):
     window = QWidget()
     window.setWindowTitle("Manage Grades")
     window.setFixedSize(1000, 700)
@@ -169,8 +169,8 @@ def open_grade_window(username, main_window=None):
         try:
             conn = mysql.connector.connect(**DB_CONFIG)
             cursor = conn.cursor()
-            cursor.execute("INSERT INTO grades (student_id, course_id, grade) VALUES (%s, %s, %s)",
-                           (sid, cid, grade_val))
+            cursor.execute("INSERT INTO grades (student_id, course_id, grade, admin_id) VALUES (%s, %s, %s, %s)",
+                           (sid, cid, grade_val, admin_id))
             conn.commit()
             cursor.close()
             conn.close()

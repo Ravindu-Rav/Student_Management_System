@@ -30,10 +30,11 @@ def login():
         conn.close()
 
         if result:
+            admin_id = result[0]  # ID from admins table
             logged_in_user = username
             QMessageBox.information(window, "Login Successful", f"Welcome {username}!")
             window.close()
-            open_main_window(logged_in_user)
+            open_main_window(logged_in_user, admin_id)
         else:
             QMessageBox.critical(window, "Login Failed", "Invalid username or password.")
     except mysql.connector.Error as err:
