@@ -1,20 +1,18 @@
-import mysql.connector
 from PySide6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,
     QMessageBox, QTableWidget, QTableWidgetItem, QApplication, QFormLayout,
-    QFrame
+    QFrame, QComboBox
 )
 from PySide6.QtGui import QFont
 from PySide6.QtCore import Qt
-
+import mysql.connector
 from config import DB_CONFIG
 
-def open_attendance_window(admin_id ,username, main_window=None):
+def open_attendance_window(admin_id, username, main_window=None):
     window = QWidget()
     window.setWindowTitle("Attendance Management")
     window.setFixedSize(1000, 700)
 
-    # Center window
     screen = QApplication.primaryScreen().geometry()
     center_x = int(screen.width() / 2 - window.width() / 2)
     center_y = int(screen.height() / 2 - window.height() / 2)
@@ -24,43 +22,69 @@ def open_attendance_window(admin_id ,username, main_window=None):
     main_layout.setContentsMargins(40, 30, 40, 30)
     main_layout.setSpacing(20)
 
-    # Title
     title = QLabel(f"📅 Attendance Management | Welcome, {username}")
     title.setFont(QFont("Segoe UI", 18, QFont.Bold))
     title.setStyleSheet("color: #FFFFFF;")
     title.setAlignment(Qt.AlignCenter)
     main_layout.addWidget(title)
 
-    # Form
     form_layout = QFormLayout()
-    student_id_entry = QLineEdit()
-    date_entry = QLineEdit()
-    status_entry = QLineEdit()
 
-    for field in [student_id_entry, date_entry, status_entry]:
-        field.setFont(QFont("Segoe UI", 11))
-        field.setStyleSheet("""
-            QLineEdit {
-                padding: 8px;
-                border: 2px solid #bdc3c7;
-                border-radius: 10px;
-            }
-            QLineEdit:focus {
-                border-color: #3498db;
-            }
-        """)
+    student_dropdown = QComboBox()
+    date_entry = QLineEdit()
+    status_dropdown = QComboBox()
+    status_dropdown.addItems(["Present", "Absent"])
+
+    def load_students():
+        try:
+            conn = mysql.connector.connect(**DB_CONFIG)
+            cursor = conn.cursor()
+            cursor.execute("SELECT id, full_name FROM students ORDER BY full_name ASC")
+            students = cursor.fetchall()
+            conn.close()
+            student_dropdown.clear()
+            for sid, name in students:
+                student_dropdown.addItem(f"{name}")
+        except:
+            QMessageBox.critical(window, "Database Error", "Unable to load students.")
+
+    for widget in [student_dropdown, date_entry, status_dropdown]:
+        widget.setFont(QFont("Segoe UI", 11))
 
     date_entry.setPlaceholderText("YYYY-MM-DD")
-    status_entry.setPlaceholderText("Present / Absent")
+    student_dropdown.setStyleSheet("""
+        QComboBox {
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+        }
+    """)
+    status_dropdown.setStyleSheet("""
+        QComboBox {
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+        }
+    """)
+    date_entry.setStyleSheet("""
+        QLineEdit {
+            padding: 8px;
+            border: 2px solid #bdc3c7;
+            border-radius: 10px;
+        }
+        QLineEdit:focus {
+            border-color: #3498db;
+        }
+    """)
 
-    form_layout.addRow("Student ID:", student_id_entry)
+    form_layout.addRow("Student:", student_dropdown)
     form_layout.addRow("Date:", date_entry)
-    form_layout.addRow("Status:", status_entry)
+    form_layout.addRow("Status:", status_dropdown)
+
     form_frame = QFrame()
     form_frame.setLayout(form_layout)
     main_layout.addWidget(form_frame)
 
-    # Table
     attendance_table = QTableWidget()
     attendance_table.setColumnCount(4)
     attendance_table.setHorizontalHeaderLabels(["ID", "Student ID", "Date", "Status"])
@@ -126,15 +150,14 @@ def open_attendance_window(admin_id ,username, main_window=None):
             attendance_table.setRowCount(len(rows))
             for row_idx, row_data in enumerate(rows):
                 for col_idx, value in enumerate(row_data):
-                    item = QTableWidgetItem(str(value))
-                    attendance_table.setItem(row_idx, col_idx, item)
+                    attendance_table.setItem(row_idx, col_idx, QTableWidgetItem(str(value)))
         except mysql.connector.Error as err:
             QMessageBox.critical(window, "Database Error", str(err))
 
     def add_attendance():
-        student_id = student_id_entry.text().strip()
+        student_id = student_dropdown.currentData()
         date = date_entry.text().strip()
-        status = status_entry.text().strip()
+        status = status_dropdown.currentText()
 
         if not student_id or not date or not status:
             QMessageBox.warning(window, "Validation", "All fields are required.")
@@ -177,18 +200,38 @@ def open_attendance_window(admin_id ,username, main_window=None):
 
     def update_attendance():
         record_id = delete_entry.text().strip()
-        student_id = student_id_entry.text().strip()
-        date = date_entry.text().strip()
-        status = status_entry.text().strip()
-
-        if not (record_id.isdigit() and student_id and date and status):
-            QMessageBox.warning(window, "Validation", "All fields including ID are required.")
+        if not record_id.isdigit():
+            QMessageBox.warning(window, "Validation", "Valid Attendance ID is required.")
             return
+
+        updates = []
+        params = []
+
+        student_id = student_dropdown.currentData()
+        if student_id:
+            updates.append("student_id = %s")
+            params.append(student_id)
+
+        date = date_entry.text().strip()
+        if date:
+            updates.append("date = %s")
+            params.append(date)
+
+        status = status_dropdown.currentText()
+        if status:
+            updates.append("status = %s")
+            params.append(status)
+
+        if not updates:
+            QMessageBox.warning(window, "Validation", "Provide at least one field to update.")
+            return
+
         try:
             conn = mysql.connector.connect(**DB_CONFIG)
             cursor = conn.cursor()
-            cursor.execute("UPDATE attendance SET student_id=%s, date=%s, status=%s WHERE id=%s",
-                           (student_id, date, status, record_id))
+            query = f"UPDATE attendance SET {', '.join(updates)} WHERE id = %s"
+            params.append(record_id)
+            cursor.execute(query, params)
             conn.commit()
             cursor.close()
             conn.close()
@@ -199,12 +242,11 @@ def open_attendance_window(admin_id ,username, main_window=None):
             QMessageBox.critical(window, "Database Error", str(err))
 
     def clear_fields():
-        student_id_entry.clear()
+        student_dropdown.setCurrentIndex(0)
         date_entry.clear()
-        status_entry.clear()
+        status_dropdown.setCurrentIndex(0)
         delete_entry.clear()
 
-    # Buttons
     button_layout = QHBoxLayout()
     button_layout.addWidget(styled_btn("Add Attendance", "#27ae60", add_attendance))
     button_layout.addWidget(styled_btn("Update Attendance", "#f39c12", update_attendance))
@@ -213,13 +255,13 @@ def open_attendance_window(admin_id ,username, main_window=None):
     button_layout.addWidget(styled_btn("Refresh Attendance", "#2980b9", refresh_list))
     main_layout.addLayout(button_layout)
 
-    # Back
     if main_window:
         def go_back():
             window.close()
             main_window.show()
         main_layout.addWidget(styled_btn("⬅ Back to Dashboard", "#34495e", go_back))
 
+    load_students()
     refresh_list()
     window.show()
     return window
