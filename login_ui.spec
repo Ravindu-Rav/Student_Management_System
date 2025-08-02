@@ -5,7 +5,7 @@ a = Analysis(
     ['gui\\login_ui.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('C:/Users/Kashmika/AppData/Local/Programs/Python/Python313/Lib/site-packages/mysql', 'mysql')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
