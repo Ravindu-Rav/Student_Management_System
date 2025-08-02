@@ -1,7 +1,7 @@
 # modules/grades.py
 
 import mysql.connector
-from config import DB_CONFIG
+from gui.config import DB_CONFIG
 
 def grade_menu():
     while True:

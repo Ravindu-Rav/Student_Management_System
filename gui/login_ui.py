@@ -1,12 +1,6 @@
 # gui/login_ui.py
 import sys
-import os
 
-# Add root folder (one level up from gui) to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import sys
-import os
 from PySide6.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QPushButton,
     QVBoxLayout, QHBoxLayout, QMessageBox, QFrame
@@ -15,7 +9,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
 import mysql.connector
 from config import DB_CONFIG
-from gui.main_ui import open_main_window
+from main_ui import open_main_window
 
 logged_in_user = None
 

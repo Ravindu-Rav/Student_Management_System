@@ -1,7 +1,7 @@
 # modules/attendance.py
 
 import mysql.connector
-from config import DB_CONFIG
+from gui.config import DB_CONFIG
 
 def attendance_menu():
     while True:

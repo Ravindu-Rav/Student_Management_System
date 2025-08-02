@@ -1,5 +1,3 @@
-import sys
-import os
 import mysql.connector
 from PySide6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout,

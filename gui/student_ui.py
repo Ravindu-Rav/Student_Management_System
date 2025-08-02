@@ -7,10 +7,7 @@ from PySide6.QtCore import Qt
 import mysql.connector
 import re
 import datetime
-import os
-import sys
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from config import DB_CONFIG
 
 def is_valid_date(date_str):

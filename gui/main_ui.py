@@ -4,11 +4,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QFont
-from gui.student_ui import open_student_window
-from gui.course_ui import open_course_window
-from gui.grade_ui import open_grade_window
-from gui.attendance_ui import open_attendance_window
-from gui.admin_ui import open_admin_window
+from student_ui import open_student_window
+from course_ui import open_course_window
+from grade_ui import open_grade_window
+from attendance_ui import open_attendance_window
+from admin_ui import open_admin_window
 # Add globals for subwindows so they don’t get GC'ed
 sub_windows = {}
 

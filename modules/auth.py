@@ -1,7 +1,7 @@
 # modules/auth.py
 
 import mysql.connector
-from config import DB_CONFIG
+from gui.config import DB_CONFIG
 
 def login():
     print("Admin Login")

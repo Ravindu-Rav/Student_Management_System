@@ -1,7 +1,7 @@
 # modules/course.py
 
 import mysql.connector
-from config import DB_CONFIG
+from gui.config import DB_CONFIG
 
 def course_menu():
     while True:
