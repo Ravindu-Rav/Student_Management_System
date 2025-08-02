@@ -87,7 +87,7 @@ def open_main_window(username, admin_id):
         window.hide()
 
     def open_admin():
-        sub_windows['admin'] = open_admin_window(admin_id ,username, window)
+        sub_windows['admin'] = open_admin_window(admin_id, window)
         window.hide()
 
     button_frame = QFrame()
