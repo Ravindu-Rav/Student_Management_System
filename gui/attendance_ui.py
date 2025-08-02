@@ -218,7 +218,7 @@ def open_attendance_window(username, main_window=None):
         def go_back():
             window.close()
             main_window.show()
-        main_layout.addWidget(styled_btn("⬅ Back", "#34495e", go_back))
+        main_layout.addWidget(styled_btn("⬅ Back to Dashboard", "#34495e", go_back))
 
     refresh_list()
     window.show()
