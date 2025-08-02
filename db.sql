@@ -1,8 +1,7 @@
-create database student_db;
-use student_db;
+CREATE DATABASE student_db;
+USE student_db;
 
-
--- Admin table for login (
+-- Admins table for login
 CREATE TABLE admins (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -16,7 +15,7 @@ CREATE TABLE students (
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
     enrollment_date DATE,
-    admin_id INT
+    admin_id INT,
     FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
@@ -24,24 +23,22 @@ CREATE TABLE students (
 CREATE TABLE courses (
     id INT AUTO_INCREMENT PRIMARY KEY,
     course_name VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT
-    admin_id INT
+    description TEXT,
+    admin_id INT,
     FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
-
 
 -- Grades table
 CREATE TABLE grades (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id INT,
     course_id INT,
+    admin_id INT,
     grade VARCHAR(2),
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-    admin_id INT
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
-
 
 -- Attendance table
 CREATE TABLE attendance (
@@ -49,12 +46,12 @@ CREATE TABLE attendance (
     student_id INT,
     course_id INT,
     date DATE,
+    admin_id INT,
     status ENUM('Present', 'Absent') NOT NULL,
     FOREIGN KEY (student_id) REFERENCES students(id) ON DELETE CASCADE,
-    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE
-    admin_id INT
+    FOREIGN KEY (course_id) REFERENCES courses(id) ON DELETE CASCADE,
     FOREIGN KEY (admin_id) REFERENCES admins(id) ON DELETE CASCADE
 );
 
---admin user manually inserted
+-- Insert initial admin user
 INSERT INTO admins (username, password) VALUES ('admin', 'admin123');
