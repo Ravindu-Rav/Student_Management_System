@@ -22,11 +22,6 @@ This is a simple **Student Management System** built using **Python** and **MySQ
 - **Library**: `mysql-connector-python`
 
 ---
-# 📚 Student Management System
-
-A modern desktop application for managing students, courses, grades, and attendance using Python, MySQL, and PySide6.
-
----
 
 ## ✅ Prerequisites (Only for First-Time Setup or Development)
 
